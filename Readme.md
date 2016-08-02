@@ -1,7 +1,7 @@
 # Личный проект «Код и Магия» [![Build status][travis-image]][travis-url] [![Dependency status][dependency-image]][dependency-url]
 
 * Студент: [Татьяна Осадчая](https://up.htmlacademy.ru/javascript/6/user/160545).
-* Наставник: `Неизвестно`.
+* Наставник: [Андрей Градусов](https://up.htmlacademy.ru/javascript/6/user/182375).
 
 ---
 
