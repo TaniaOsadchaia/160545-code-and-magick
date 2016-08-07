@@ -1,4 +1,5 @@
 function getMessage(a, b) {
+	var i;
 	var typeA = typeof a;
 
 	if (typeA == 'number') {
@@ -16,13 +17,13 @@ function getMessage(a, b) {
 	if (a instanceof Array) {
 		if (b instanceof Array) {
 			var distancePath = 0;
-			for (var i = 0; i < a.length; i++) {
+			for (i = 0; i < a.length; i++) {
 				distancePath += (a[i] * b[i]);
 			}
 			return 'Я прошёл ' + distancePath + ' метров';
 		} else {
 			var numberOfSteps = 0;
-			for (var i = 0; i < a.length; i++) {
+			for (i = 0; i < a.length; i++) {
 				numberOfSteps += a[i];
 			}
 			return 'Я прошёл ' + numberOfSteps + ' шагов';
