@@ -395,20 +395,68 @@ window.Game = (function() {
      * Отрисовка экрана паузы.
      */
     _drawPauseScreen: function() {
+      var text;
       switch (this.state.currentStatus) {
         case Verdict.WIN:
           console.log('you have won!');
+          text = 'You have won!\nPress Space to restart';
           break;
         case Verdict.FAIL:
           console.log('you have failed!');
+          text = 'You have failed!\nPress Space to restart';
           break;
         case Verdict.PAUSE:
           console.log('game is on pause!');
+          text = 'Game is on pause!\nPress Space to resume';
           break;
         case Verdict.INTRO:
           console.log('welcome to the game! Press Space to start');
+          text = 'Welcome to the game!\nPress Space to start';
           break;
+        default:
+          console.log('Warning: unknown currentStatus');
+          return;
       }
+      // block params
+      var x = 310;
+      var y = 210;
+      var width = 276;
+      var height = 122;
+      var deformation = 20;
+      // text params
+      var fontSize = 16;
+      var lineHeight = 20;
+      var textOffsetX = 20;
+      var textOffsetY = 10;
+      var lines = text.split('\n');
+      var textHeight = lines.length * lineHeight;
+      var textTranslateX = x + deformation + textOffsetX;
+      var textTranslateY = y - deformation - 0.5 * height - 0.5 * textHeight + textOffsetY;
+      // draw cloud
+      this.ctx.save();
+      this.ctx.beginPath();
+      this.ctx.moveTo(x, y);
+      this.ctx.lineTo(x + deformation, y - deformation - height);
+      this.ctx.lineTo(x + deformation + width, y - deformation - height);
+      this.ctx.lineTo(x + deformation + width, y - deformation);
+      this.ctx.closePath();
+      this.ctx.fillStyle = '#FFFFFF';
+      this.ctx.shadowColor = 'rgba(0, 0, 0, 0.7)';
+      this.ctx.shadowOffsetY = 10;
+      this.ctx.shadowOffsetX = 10;
+      this.ctx.fill();
+      this.ctx.restore();
+      // draw text
+      this.ctx.save();
+      this.ctx.translate(textTranslateX, textTranslateY);
+      this.ctx.textBaseline = 'hanging';
+      this.ctx.font = String(fontSize) + 'px PT Mono';
+      this.ctx.textAlign = 'left';
+      this.ctx.fillStyle = '#000000';
+      for (var i = 0; i<lines.length; i++) {
+        this.ctx.fillText(lines[i], 0, lineHeight * i);
+      }
+      this.ctx.restore();
     },
 
     /**
