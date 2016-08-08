@@ -411,52 +411,97 @@ window.Game = (function() {
           break;
         case Verdict.INTRO:
           console.log('welcome to the game! Press Space to start');
-          text = 'Welcome to the game!\nPress Space to start';
+          text = 'Welcome to the game! Arrows can move. Shift can shoot. Don\'t worry. Breathe deeply.\nPress Space to start';
           break;
         default:
           console.log('Warning: unknown currentStatus');
           return;
       }
-      // block params
       var x = 310;
       var y = 210;
+      this._drawSpeachBubble(this.ctx, text, x, y);
+    },
+
+    /**
+     * Нарисует облачко с тестом
+     * @param {CanvasRenderingContext2D} ctx
+     * @param {String} text
+     * @param {number} x
+     * @param {number} y
+    */
+    _drawSpeachBubble: function(ctx, text, x, y) {
       var width = 276;
       var height = 122;
       var deformation = 20;
-      // text params
       var fontSize = 16;
-      var lineHeight = 20;
-      var textOffsetX = 20;
-      var textOffsetY = 10;
-      var lines = text.split('\n');
+      var padding = 20;
+      // bubble
+      ctx.save();
+      ctx.beginPath();
+      ctx.moveTo(x, y);
+      ctx.lineTo(x + deformation, y - deformation - height);
+      ctx.lineTo(x + deformation + width, y - deformation - height);
+      ctx.lineTo(x + deformation + width, y - deformation);
+      ctx.closePath();
+      ctx.fillStyle = '#FFFFFF';
+      ctx.shadowColor = 'rgba(0, 0, 0, 0.7)';
+      ctx.shadowOffsetY = 10;
+      ctx.shadowOffsetX = 10;
+      ctx.fill();
+      ctx.restore();
+      // text
+      ctx.save();
+      ctx.textBaseline = 'hanging';
+      ctx.font = String(fontSize) + 'px PT Mono';
+      ctx.textAlign = 'left';
+      ctx.fillStyle = '#000000';
+      var maxWidth = width - 2 * padding;
+      var lines = this._findCanvasTextLines(ctx, text, maxWidth);
+      var lineHeight = fontSize + 4;
       var textHeight = lines.length * lineHeight;
-      var textTranslateX = x + deformation + textOffsetX;
-      var textTranslateY = y - deformation - 0.5 * height - 0.5 * textHeight + textOffsetY;
-      // draw cloud
-      this.ctx.save();
-      this.ctx.beginPath();
-      this.ctx.moveTo(x, y);
-      this.ctx.lineTo(x + deformation, y - deformation - height);
-      this.ctx.lineTo(x + deformation + width, y - deformation - height);
-      this.ctx.lineTo(x + deformation + width, y - deformation);
-      this.ctx.closePath();
-      this.ctx.fillStyle = '#FFFFFF';
-      this.ctx.shadowColor = 'rgba(0, 0, 0, 0.7)';
-      this.ctx.shadowOffsetY = 10;
-      this.ctx.shadowOffsetX = 10;
-      this.ctx.fill();
-      this.ctx.restore();
-      // draw text
-      this.ctx.save();
-      this.ctx.translate(textTranslateX, textTranslateY);
-      this.ctx.textBaseline = 'hanging';
-      this.ctx.font = String(fontSize) + 'px PT Mono';
-      this.ctx.textAlign = 'left';
-      this.ctx.fillStyle = '#000000';
-      for (var i = 0; i<lines.length; i++) {
-        this.ctx.fillText(lines[i], 0, lineHeight * i);
+      var textX = x + deformation + padding;
+      var textY = y - deformation - 0.5 * height - 0.5 * textHeight + 0.25 * deformation;
+      for (var i = 0; i < lines.length; i++) {
+        ctx.fillText(lines[i], textX, textY + lineHeight * i);
       }
-      this.ctx.restore();
+      ctx.restore();
+    },
+
+    /**
+     * Разделит текст на строки для вывода на canvas
+     * @param {CanvasRenderingContext2D} ctx
+     * @param {String} text
+     * @param {number} maxWidth
+    */
+    _findCanvasTextLines: function(ctx, text, maxWidth) {
+      var result = [];
+      var lines = text.split('\n');
+      var numLines = lines.length;
+      for (var i = 0; i < numLines; i++) {
+        var line = lines[i];
+        var lineWidth = ctx.measureText(line).width;
+        if (lineWidth <= maxWidth) {
+          result.push(line);
+        } else {
+          var words = line.split(' ');
+          var numWords = words.length;
+          line = '';
+          for (var n = 0; n < numWords; n++) {
+            var testLine = line + words[n] + ' ';
+            var testWidth = ctx.measureText(testLine).width;
+            if (testWidth > maxWidth) {
+              result.push(line);
+              line = words[n] + ' ';
+            } else {
+              line = testLine;
+            }
+          }
+          if (line.length > 0) {
+            result.push(line);
+          }
+        }
+      }
+      return result;
     },
 
     /**
