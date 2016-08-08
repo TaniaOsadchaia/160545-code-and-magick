@@ -419,7 +419,7 @@ window.Game = (function() {
       }
       var x = 310;
       var y = 210;
-      this._drawSpeachBubble(this.ctx, text, x, y);
+      this._drawSpeechBubble(this.ctx, text, x, y);
     },
 
     /**
@@ -429,7 +429,7 @@ window.Game = (function() {
      * @param {number} x
      * @param {number} y
     */
-    _drawSpeachBubble: function(ctx, text, x, y) {
+    _drawSpeechBubble: function(ctx, text, x, y) {
       var width = 276;
       var height = 122;
       var deformation = 20;
