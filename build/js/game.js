@@ -423,7 +423,7 @@ window.Game = (function() {
     },
 
     /**
-     * Нарисует облачко с тестом
+     * Нарисует облачко с текстом
      * @param {CanvasRenderingContext2D} ctx
      * @param {String} text
      * @param {number} x
@@ -450,17 +450,46 @@ window.Game = (function() {
       ctx.fill();
       ctx.restore();
       // text
+      var rect = {};
+      rect.x = x + deformation + padding;
+      rect.y = y - deformation - height + 0.25 * deformation;
+      rect.width = width - 2 * padding;
+      rect.height = height;
+      this._drawCanvasText(ctx, text, fontSize, rect.x, rect.y, rect.width, rect.height);
+    },
+
+    /**
+     * Нарисует текст на canvas в указанной области
+     * @param {CanvasRenderingContext2D} ctx
+     * @param {String} text
+     * @param {number} fontSize
+     * @param {number} x
+     * @param {number} y
+     * @param {number} width
+     * @param {number} height
+    */
+    _drawCanvasText: function(ctx, text, fontSize, x, y, width, height) {
+      var minFontSize = 5;
+      var fontSizeChange = 1;
+
       ctx.save();
       ctx.textBaseline = 'hanging';
-      ctx.font = String(fontSize) + 'px PT Mono';
       ctx.textAlign = 'left';
       ctx.fillStyle = '#000000';
-      var maxWidth = width - 2 * padding;
-      var lines = this._findCanvasTextLines(ctx, text, maxWidth);
-      var lineHeight = fontSize + 4;
-      var textHeight = lines.length * lineHeight;
-      var textX = x + deformation + padding;
-      var textY = y - deformation - 0.5 * height - 0.5 * textHeight + 0.25 * deformation;
+
+      var lines;
+      var lineHeight;
+      var textHeight;
+      do {
+        ctx.font = String(fontSize) + 'px PT Mono';
+        lines = this._findCanvasTextLines(ctx, text, width);
+        lineHeight = 1.25 * fontSize;
+        textHeight = lines.length * lineHeight;
+        fontSize -= fontSizeChange;
+      } while (textHeight > height && fontSize > minFontSize);
+
+      var textX = x;
+      var textY = y + 0.5 * height - 0.5 * textHeight;
       for (var i = 0; i < lines.length; i++) {
         ctx.fillText(lines[i], textX, textY + lineHeight * i);
       }
@@ -469,6 +498,7 @@ window.Game = (function() {
 
     /**
      * Разделит текст на строки для вывода на canvas
+     * !!! На canvas уже должны буть установлены параметры шрифта
      * @param {CanvasRenderingContext2D} ctx
      * @param {String} text
      * @param {number} maxWidth
