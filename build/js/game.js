@@ -469,14 +469,14 @@ window.Game = (function() {
      * @param {number} height
     */
     _drawCanvasText: function(ctx, text, fontSize, x, y, width, height) {
-      var minFontSize = 5;
+      var minFontSize = 8;
       var fontSizeChange = 1;
-
+      // settings
       ctx.save();
       ctx.textBaseline = 'hanging';
       ctx.textAlign = 'left';
       ctx.fillStyle = '#000000';
-
+      // find fontSize
       var lines;
       var lineHeight;
       var textHeight;
@@ -487,7 +487,11 @@ window.Game = (function() {
         textHeight = lines.length * lineHeight;
         fontSize -= fontSizeChange;
       } while (textHeight > height && fontSize > minFontSize);
-
+      // log errors
+      if (textHeight > height) {
+        console.log('Warning: can\'t bound text');
+      }
+      // draw
       var textX = x;
       var textY = y + 0.5 * height - 0.5 * textHeight;
       for (var i = 0; i < lines.length; i++) {
