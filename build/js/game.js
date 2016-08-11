@@ -423,7 +423,7 @@ window.Game = (function() {
     },
 
     /**
-     * Нарисует облачко с тестом
+     * Нарисует облачко с текстом
      * @param {CanvasRenderingContext2D} ctx
      * @param {String} text
      * @param {number} x
@@ -433,7 +433,6 @@ window.Game = (function() {
       var width = 276;
       var height = 122;
       var deformation = 20;
-      var fontSize = 16;
       var padding = 20;
       // bubble
       ctx.save();
@@ -450,25 +449,38 @@ window.Game = (function() {
       ctx.fill();
       ctx.restore();
       // text
-      ctx.save();
-      ctx.textBaseline = 'hanging';
-      ctx.font = String(fontSize) + 'px PT Mono';
-      ctx.textAlign = 'left';
-      ctx.fillStyle = '#000000';
-      var maxWidth = width - 2 * padding;
-      var lines = this._findCanvasTextLines(ctx, text, maxWidth);
-      var lineHeight = fontSize + 4;
-      var textHeight = lines.length * lineHeight;
+      var textWidth = width - 2 * padding;
       var textX = x + deformation + padding;
-      var textY = y - deformation - 0.5 * height - 0.5 * textHeight + 0.25 * deformation;
-      for (var i = 0; i < lines.length; i++) {
-        ctx.fillText(lines[i], textX, textY + lineHeight * i);
-      }
+      var textYCentral = y - deformation - 0.5 * height + 0.25 * deformation;
+      ctx.save();
+      ctx.translate(textX, textYCentral);
+      this._drawCanvasText(text, textWidth);
       ctx.restore();
     },
 
     /**
+     * Нарисует текст не шире width на canvas
+     * !!! (0, 0) точка на canvas воспринимается как левая центральная относительно текста
+     * @param {String} text
+     * @param {number} width
+    */
+    _drawCanvasText: function(text, width) {
+      var fontSize = 16;
+      this.ctx.textBaseline = 'hanging';
+      this.ctx.textAlign = 'left';
+      this.ctx.fillStyle = '#000000';
+      this.ctx.font = String(fontSize) + 'px PT Mono';
+      var lines = this._findCanvasTextLines(this.ctx, text, width);
+      var lineHeight = 1.25 * fontSize;
+      var textHeight = lines.length * lineHeight;
+      for (var i = 0; i < lines.length; i++) {
+        this.ctx.fillText(lines[i], 0, -0.5 * textHeight + lineHeight * i);
+      }
+    },
+
+    /**
      * Разделит текст на строки для вывода на canvas
+     * !!! На canvas уже должны буть установлены параметры шрифта
      * @param {CanvasRenderingContext2D} ctx
      * @param {String} text
      * @param {number} maxWidth
