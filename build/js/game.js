@@ -418,7 +418,7 @@ window.Game = (function() {
           return;
       }
       var x = 310;
-      var y = 210;
+      var y = 220;
       this._drawSpeechBubble(this.ctx, text, x, y);
     },
 
@@ -431,36 +431,43 @@ window.Game = (function() {
     */
     _drawSpeechBubble: function(ctx, text, x, y) {
       var width = 276;
-      var height = 122;
       var deformation = 20;
       var padding = 20;
-      // bubble
+      // text
+      var textWidth = width - 2 * padding;
+      var textX = x + deformation + padding;
+      var textYBottom = y - deformation - padding + 0.25 * deformation;
       ctx.save();
+      ctx.translate(textX, textYBottom);
+      var textHeight = this._drawCanvasText(text, textWidth);
+      ctx.restore();
+      // bubble
+      var height = textHeight + 2 * padding;
+      this._drawBubbleOnBack(ctx, x, y, width, height, deformation, '#FFFFFF');
+      this._drawBubbleOnBack(ctx, x + 10, y + 10, width, height, deformation, 'rgba(0, 0, 0, 0.7)');
+    },
+
+    /**
+    * Нарисует облачко по заданным параметрам на заднем слое canvas
+    */
+    _drawBubbleOnBack: function(ctx, x, y, width, height, deformation, fillStyle) {
+      ctx.save();
+      ctx.globalCompositeOperation = 'destination-over';
       ctx.beginPath();
       ctx.moveTo(x, y);
       ctx.lineTo(x + deformation, y - deformation - height);
       ctx.lineTo(x + deformation + width, y - deformation - height);
       ctx.lineTo(x + deformation + width, y - deformation);
       ctx.closePath();
-      ctx.fillStyle = '#FFFFFF';
-      ctx.shadowColor = 'rgba(0, 0, 0, 0.7)';
-      ctx.shadowOffsetY = 10;
-      ctx.shadowOffsetX = 10;
+      ctx.fillStyle = fillStyle;
       ctx.fill();
-      ctx.restore();
-      // text
-      var textWidth = width - 2 * padding;
-      var textX = x + deformation + padding;
-      var textYCentral = y - deformation - 0.5 * height + 0.25 * deformation;
-      ctx.save();
-      ctx.translate(textX, textYCentral);
-      this._drawCanvasText(text, textWidth);
+      ctx.globalCompositeOperation = 'source-over';
       ctx.restore();
     },
 
     /**
-     * Нарисует текст не шире width на canvas
-     * !!! (0, 0) точка на canvas воспринимается как левая центральная относительно текста
+     * Нарисует текст не шире width на canvas, вернет высоту текста
+     * !!! (0, 0) точка на canvas воспринимается как левая нижняя относительно текста
      * @param {String} text
      * @param {number} width
     */
@@ -474,8 +481,9 @@ window.Game = (function() {
       var lineHeight = 1.25 * fontSize;
       var textHeight = lines.length * lineHeight;
       for (var i = 0; i < lines.length; i++) {
-        this.ctx.fillText(lines[i], 0, -0.5 * textHeight + lineHeight * i);
+        this.ctx.fillText(lines[i], 0, -textHeight + lineHeight * i);
       }
+      return textHeight;
     },
 
     /**
