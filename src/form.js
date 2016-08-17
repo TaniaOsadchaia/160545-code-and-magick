@@ -9,6 +9,7 @@ window.form = (function() {
   var formTextInput = document.querySelector('.review-form-field-text');
   var formTextReminder = document.querySelector('.review-fields-text');
   var formStars = document.querySelectorAll('.review-mark-label');
+  var formRemindersContainer = document.querySelector('.review-fields');
 
   var form = {
     onClose: null,
@@ -30,22 +31,19 @@ window.form = (function() {
       }
     },
 
-    checkValidation: function() {
-      var isValidName = this.checkValidationName();
-      var isValidText = this.checkValidationText(this.getNumStars());
+    checkValidation: function(numStars) {
+      if (typeof numStars === 'undefined') {
+        numStars = this.getNumStars();
+      }
+      // calc
+      var isValidName = (formNameInput.value !== '');
+      var isValidText = (numStars >= 3 || formTextInput.value !== '');
       var isValid = isValidName && isValidText;
-      return isValid;
-    },
-
-    checkValidationName: function() {
-      var isValid = (formNameInput.value !== '');
-      this.setVisible(formNameReminder, !isValid);
-      return isValid;
-    },
-
-    checkValidationText: function(numStars) {
-      var isValid = (numStars >= 3 || formTextInput.value !== '');
-      this.setVisible(formTextReminder, !isValid);
+      // visible
+      this.setVisible(formNameReminder, !isValidName);
+      this.setVisible(formTextReminder, !isValidText);
+      this.setVisible(formRemindersContainer, !isValid);
+      this.setDisabled(formSubmitButton, !isValid);
       return isValid;
     },
 
@@ -54,6 +52,14 @@ window.form = (function() {
         obj.classList.remove('invisible');
       } else {
         obj.classList.add('invisible');
+      }
+    },
+
+    setDisabled: function(obj, value) {
+      if (value) {
+        obj.setAttribute('disabled', true);
+      } else {
+        obj.removeAttribute('disabled');
       }
     },
 
@@ -77,18 +83,18 @@ window.form = (function() {
 
   formNameInput.oninput = function(evt) {
     evt.preventDefault();
-    form.checkValidationName();
+    form.checkValidation();
   };
 
   formTextInput.oninput = function(evt) {
     evt.preventDefault();
-    form.checkValidationText();
+    form.checkValidation();
   };
 
   for (var i = 0; i < formStars.length; i++) {
     formStars[i].onclick = function() {
       var numStars = this.control.value;
-      form.checkValidationText(numStars);
+      form.checkValidation(numStars);
     };
   }
 
