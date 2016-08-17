@@ -36,8 +36,8 @@ window.form = (function() {
         numStars = this.getNumStars();
       }
       // calc
-      var isValidName = (formNameInput.value !== '');
-      var isValidText = (numStars >= 3 || formTextInput.value !== '');
+      var isValidName = (formNameInput.value.trim() !== '');
+      var isValidText = (numStars >= 3 || formTextInput.value.trim() !== '');
       var isValid = isValidName && isValidText;
       // visible
       this.setVisible(formNameReminder, !isValidName);
