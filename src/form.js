@@ -2,6 +2,7 @@
 
 window.form = (function() {
   var formContainer = document.querySelector('.overlay-container');
+  var formElement = document.querySelector('.review-form');
   var formCloseButton = document.querySelector('.review-form-close');
   var formSubmitButton = document.querySelector('.review-submit');
   var formNameInput = document.querySelector('.review-form-field-name');
@@ -36,8 +37,8 @@ window.form = (function() {
         numStars = this.getNumStars();
       }
       // calc
-      var isValidName = (formNameInput.value.trim() !== '');
-      var isValidText = (numStars >= 3 || formTextInput.value.trim() !== '');
+      var isValidName = this.isInputEmpty(formNameInput);
+      var isValidText = (numStars >= 3 || this.isInputEmpty(formTextInput));
       var isValid = isValidName && isValidText;
       // visible
       this.setVisible(formNameReminder, !isValidName);
@@ -47,19 +48,23 @@ window.form = (function() {
       return isValid;
     },
 
-    setVisible: function(obj, value) {
+    isInputEmpty: function(input) {
+      return input.value.trim() !== '';
+    },
+
+    setVisible: function(htmlElement, value) {
       if (value) {
-        obj.classList.remove('invisible');
+        htmlElement.classList.remove('invisible');
       } else {
-        obj.classList.add('invisible');
+        htmlElement.classList.add('invisible');
       }
     },
 
-    setDisabled: function(obj, value) {
+    setDisabled: function(htmlElement, value) {
       if (value) {
-        obj.setAttribute('disabled', true);
+        htmlElement.setAttribute('disabled', true);
       } else {
-        obj.removeAttribute('disabled');
+        htmlElement.removeAttribute('disabled');
       }
     },
 
@@ -69,33 +74,34 @@ window.form = (function() {
   };
 
 
-  formCloseButton.onclick = function(evt) {
+  formCloseButton.addEventListener('click', function(evt) {
     evt.preventDefault();
     form.close();
-  };
+  });
 
-  formSubmitButton.onclick = function(evt) {
+  formSubmitButton.addEventListener('click', function(evt) {
+    evt.preventDefault();
     var isValid = form.checkValidation();
-    if (!isValid) {
-      evt.preventDefault();
+    if (isValid) {
+      formElement.submit();
     }
-  };
+  });
 
-  formNameInput.oninput = function(evt) {
+  formNameInput.addEventListener('input', function(evt) {
     evt.preventDefault();
     form.checkValidation();
-  };
+  });
 
-  formTextInput.oninput = function(evt) {
+  formTextInput.addEventListener('input', function(evt) {
     evt.preventDefault();
     form.checkValidation();
-  };
+  });
 
   for (var i = 0; i < formStars.length; i++) {
-    formStars[i].onclick = function() {
+    formStars[i].addEventListener('click', function() {
       var numStars = this.control.value;
       form.checkValidation(numStars);
-    };
+    });
   }
 
   return form;
