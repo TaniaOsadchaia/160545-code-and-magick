@@ -105,7 +105,7 @@ window.form = (function() {
         formNameInput.value = name;
       }
       var stars = browserCookies.get(COOKIE_MARK);
-      if (stars && stars != 'null') {
+      if (stars && stars !== 'null') {
         this.setNumStars(stars);
       }
     },
