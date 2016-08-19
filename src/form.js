@@ -1,9 +1,9 @@
 'use strict';
 
 window.form = (function() {
-  const COOKIE_NAME = 'review-name';
-  const COOKIE_MARK = 'review-mark';
-  
+  var COOKIE_NAME = 'review-name';
+  var COOKIE_MARK = 'review-mark';
+
   var browserCookies = require('browser-cookies');
 
   var formContainer = document.querySelector('.overlay-container');
@@ -93,21 +93,38 @@ window.form = (function() {
     },
 
     saveCookies: function() {
-      var expires = 365;
+      var expires = this.calcCookiesExpires();
       var options = {expires: expires};
       browserCookies.set(COOKIE_NAME, formNameInput.value, options);
       browserCookies.set(COOKIE_MARK, this.getNumStars(), options);
     },
 
     loadCookies: function() {
-      var name = String(browserCookies.get(COOKIE_NAME));
-      if (name) {
+      var name = browserCookies.get(COOKIE_NAME);
+      if (name && name !== 'null') {
         formNameInput.value = name;
       }
-      var stars = Number(browserCookies.get(COOKIE_MARK));
-      if (stars) {
+      var stars = browserCookies.get(COOKIE_MARK);
+      if (stars && stars != 'null') {
         this.setNumStars(stars);
       }
+    },
+
+    calcCookiesExpires: function() {
+      var now = new Date();
+      var year = now.getFullYear();
+      var time = now.getTime();
+
+      var birthday = new Date(year, 11, 9);
+      var birthdayTime = birthday.getTime();
+
+      if (time < birthdayTime) {
+        birthday.setFullYear(year - 1);
+        birthdayTime = birthday.getTime();
+      }
+
+      var days = (time - birthdayTime) / (24 * 60 * 60 * 1000);
+      return days;
     }
   };
 
