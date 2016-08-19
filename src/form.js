@@ -1,6 +1,11 @@
 'use strict';
 
 window.form = (function() {
+  const COOKIE_NAME = 'review-name';
+  const COOKIE_MARK = 'review-mark';
+  
+  var browserCookies = require('browser-cookies');
+
   var formContainer = document.querySelector('.overlay-container');
   var formElement = document.querySelector('.review-form');
   var formCloseButton = document.querySelector('.review-form-close');
@@ -19,8 +24,9 @@ window.form = (function() {
      * @param {Function} cb
      */
     open: function(cb) {
-      formContainer.classList.remove('invisible');
+      this.loadCookies();
       this.checkValidation();
+      formContainer.classList.remove('invisible');
       cb();
     },
 
@@ -68,11 +74,42 @@ window.form = (function() {
       }
     },
 
+    setChecked: function(htmlElement, value) {
+      if (value) {
+        htmlElement.setAttribute('checked', true);
+      } else {
+        htmlElement.removeAttribute('checked');
+      }
+    },
+
     getNumStars: function() {
       return document.querySelector('input[name="review-mark"]:checked').value;
+    },
+
+    setNumStars: function(value) {
+      if (value >= 0 && value < formStars.length) {
+        this.setChecked(formStars[value - 1], true);
+      }
+    },
+
+    saveCookies: function() {
+      var expires = 365;
+      var options = {expires: expires};
+      browserCookies.set(COOKIE_NAME, formNameInput.value, options);
+      browserCookies.set(COOKIE_MARK, this.getNumStars(), options);
+    },
+
+    loadCookies: function() {
+      var name = String(browserCookies.get(COOKIE_NAME));
+      if (name) {
+        formNameInput.value = name;
+      }
+      var stars = Number(browserCookies.get(COOKIE_MARK));
+      if (stars) {
+        this.setNumStars(stars);
+      }
     }
   };
-
 
   formCloseButton.addEventListener('click', function(evt) {
     evt.preventDefault();
@@ -83,6 +120,7 @@ window.form = (function() {
     evt.preventDefault();
     var isValid = form.checkValidation();
     if (isValid) {
+      form.saveCookies();
       formElement.submit();
     }
   });
@@ -90,6 +128,7 @@ window.form = (function() {
   formNameInput.addEventListener('input', function(evt) {
     evt.preventDefault();
     form.checkValidation();
+    form.saveCookies();
   });
 
   formTextInput.addEventListener('input', function(evt) {
@@ -101,6 +140,7 @@ window.form = (function() {
     formStars[i].addEventListener('click', function() {
       var numStars = this.control.value;
       form.checkValidation(numStars);
+      form.saveCookies();
     });
   }
 
