@@ -1,6 +1,7 @@
 'use strict';
 
 window.form = (function() {
+  var GRACE_HOPPER_BIRTHDAY = new Date(1906, 11, 9);
   var COOKIE_NAME = 'review-name';
   var COOKIE_MARK = 'review-mark';
 
@@ -111,11 +112,13 @@ window.form = (function() {
     },
 
     calcCookiesExpires: function() {
+      var daysSinceGraceHopperBirthday = 0;
+
       var now = new Date();
       var year = now.getFullYear();
       var time = now.getTime();
 
-      var birthday = new Date(year, 11, 9);
+      var birthday = new Date(year, GRACE_HOPPER_BIRTHDAY.getMonth(), GRACE_HOPPER_BIRTHDAY.getDate());
       var birthdayTime = birthday.getTime();
 
       if (time < birthdayTime) {
@@ -123,8 +126,8 @@ window.form = (function() {
         birthdayTime = birthday.getTime();
       }
 
-      var days = (time - birthdayTime) / (24 * 60 * 60 * 1000);
-      return days;
+      daysSinceGraceHopperBirthday = (time - birthdayTime) / (24 * 60 * 60 * 1000);
+      return daysSinceGraceHopperBirthday;
     }
   };
 
