@@ -104,7 +104,7 @@ window.form = (function() {
     },
 
     calcCookiesExpires: function() {
-      var daysSinceGraceHopperBirthday = 0;
+      var timeDiff = 0;
 
       var now = new Date();
       var year = now.getFullYear();
@@ -118,8 +118,8 @@ window.form = (function() {
         birthdayTime = birthday.getTime();
       }
 
-      daysSinceGraceHopperBirthday = (time - birthdayTime) / (24 * 60 * 60 * 1000);
-      return daysSinceGraceHopperBirthday;
+      timeDiff = (time - birthdayTime) / (24 * 60 * 60 * 1000);
+      return timeDiff;
     }
   };
 
