@@ -20,7 +20,6 @@ window.form = (function() {
 
   var form = {
     onClose: null,
-    numStars: Number(document.querySelector('input[name="review-mark"]:checked').value),
 
     /**
      * @param {Function} cb
@@ -43,7 +42,7 @@ window.form = (function() {
     checkValidation: function() {
       // calc
       var isValidName = this.isInputEmpty(formNameInput);
-      var isValidText = (this.numStars >= 3 || this.isInputEmpty(formTextInput));
+      var isValidText = (this.getNumStars() >= 3 || this.isInputEmpty(formTextInput));
       var isValid = isValidName && isValidText;
       // visible
       this.setVisible(formNameReminder, !isValidName);
@@ -77,9 +76,12 @@ window.form = (function() {
       htmlElement.control.checked = value;
     },
 
+    getNumStars: function() {
+      return +document.querySelector('input[name="review-mark"]:checked').value;
+    },
+
     setNumStars: function(value) {
-      value = Number(value);
-      this.numStars = value;
+      value = +value;
       if (value >= 1 && value <= formStars.length) {
         this.setChecked(formStars[formStars.length - value], true);
       }
@@ -89,7 +91,7 @@ window.form = (function() {
       var expires = this.calcCookiesExpires();
       var options = {expires: expires};
       browserCookies.set(COOKIE_NAME, formNameInput.value, options);
-      browserCookies.set(COOKIE_MARK, String(this.numStars), options);
+      browserCookies.set(COOKIE_MARK, String(this.getNumStars()), options);
     },
 
     loadCookies: function() {
@@ -151,7 +153,7 @@ window.form = (function() {
   for (var i = 0; i < formStars.length; i++) {
     formStars[i].addEventListener('click', function(evt) {
       evt.preventDefault();
-      form.setNumStars(this.control.value);
+      form.setNumStars(evt.target.control.value);
       form.checkValidation();
       form.saveCookies();
     });
