@@ -1,6 +1,12 @@
 'use strict';
 
 window.form = (function() {
+  var GRACE_HOPPER_BIRTHDAY = new Date(1906, 11, 9);
+  var COOKIE_NAME = 'review-name';
+  var COOKIE_MARK = 'review-mark';
+
+  var browserCookies = require('browser-cookies');
+
   var formContainer = document.querySelector('.overlay-container');
   var formElement = document.querySelector('.review-form');
   var formCloseButton = document.querySelector('.review-form-close');
@@ -19,8 +25,9 @@ window.form = (function() {
      * @param {Function} cb
      */
     open: function(cb) {
-      formContainer.classList.remove('invisible');
+      this.loadCookies();
       this.checkValidation();
+      formContainer.classList.remove('invisible');
       cb();
     },
 
@@ -32,13 +39,10 @@ window.form = (function() {
       }
     },
 
-    checkValidation: function(numStars) {
-      if (typeof numStars === 'undefined') {
-        numStars = this.getNumStars();
-      }
+    checkValidation: function() {
       // calc
       var isValidName = this.isInputEmpty(formNameInput);
-      var isValidText = (numStars >= 3 || this.isInputEmpty(formTextInput));
+      var isValidText = (this.getNumStars() >= 3 || this.isInputEmpty(formTextInput));
       var isValid = isValidName && isValidText;
       // visible
       this.setVisible(formNameReminder, !isValidName);
@@ -68,11 +72,58 @@ window.form = (function() {
       }
     },
 
+    setChecked: function(htmlElement, value) {
+      htmlElement.control.checked = value;
+    },
+
     getNumStars: function() {
-      return document.querySelector('input[name="review-mark"]:checked').value;
+      return +document.querySelector('input[name="review-mark"]:checked').value;
+    },
+
+    setNumStars: function(value) {
+      value = +value;
+      if (value >= 1 && value <= formStars.length) {
+        this.setChecked(formStars[formStars.length - value], true);
+      }
+    },
+
+    saveCookies: function() {
+      var expires = this.calcCookiesExpires();
+      var options = {expires: expires};
+      browserCookies.set(COOKIE_NAME, formNameInput.value, options);
+      browserCookies.set(COOKIE_MARK, String(this.getNumStars()), options);
+    },
+
+    loadCookies: function() {
+      var name = browserCookies.get(COOKIE_NAME);
+      if (name && name !== 'null') {
+        formNameInput.value = name;
+      }
+      var stars = browserCookies.get(COOKIE_MARK);
+      if (stars && stars !== 'null') {
+        this.setNumStars(stars);
+      }
+    },
+
+    calcCookiesExpires: function() {
+      var timeDiff = 0;
+
+      var now = new Date();
+      var year = now.getFullYear();
+      var time = now.getTime();
+
+      var birthday = new Date(year, GRACE_HOPPER_BIRTHDAY.getMonth(), GRACE_HOPPER_BIRTHDAY.getDate());
+      var birthdayTime = birthday.getTime();
+
+      if (time < birthdayTime) {
+        birthday.setFullYear(year - 1);
+        birthdayTime = birthday.getTime();
+      }
+
+      timeDiff = (time - birthdayTime) / (24 * 60 * 60 * 1000);
+      return timeDiff;
     }
   };
-
 
   formCloseButton.addEventListener('click', function(evt) {
     evt.preventDefault();
@@ -83,6 +134,7 @@ window.form = (function() {
     evt.preventDefault();
     var isValid = form.checkValidation();
     if (isValid) {
+      form.saveCookies();
       formElement.submit();
     }
   });
@@ -90,6 +142,7 @@ window.form = (function() {
   formNameInput.addEventListener('input', function(evt) {
     evt.preventDefault();
     form.checkValidation();
+    form.saveCookies();
   });
 
   formTextInput.addEventListener('input', function(evt) {
@@ -98,9 +151,11 @@ window.form = (function() {
   });
 
   for (var i = 0; i < formStars.length; i++) {
-    formStars[i].addEventListener('click', function() {
-      var numStars = this.control.value;
-      form.checkValidation(numStars);
+    formStars[i].addEventListener('click', function(evt) {
+      evt.preventDefault();
+      form.setNumStars(evt.target.control.value);
+      form.checkValidation();
+      form.saveCookies();
     });
   }
 
