@@ -42,24 +42,24 @@ function scriptRequest(src, callback) {
       }
     };
 
-    var onLoad = function(evt) {
-      setListening(evt.target, false);
+    var onLoad = function() {
+      setListening(false);
       checkCallback();
     };
 
-    var onError = function(evt) {
-      setListening(evt.target, false);
+    var onError = function() {
+      setListening(false);
       checkCallback();
     };
 
     var onChangeState = function(evt) {
       if (evt.target.readyState === 'complete' || evt.target.readyState === 'loaded') {
-        setListening(evt.target, false);
+        setListening(false);
         setTimeout(checkCallback, 0);
       }
     };
 
-    setListening(script, true);
+    setListening(true);
     script.id = id;
     script.src = src + '?callback=' + id;
     document.body.appendChild(script);
