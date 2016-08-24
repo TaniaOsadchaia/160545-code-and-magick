@@ -1,6 +1,7 @@
 'use strict';
 
 var reviews = null;
+var reviewsSrc = 'http://localhost:1506/api/reviews';
 
 /**
 * Запрос на сервер. JSONP
@@ -18,8 +19,7 @@ function scriptRequest(src, callback) {
   };
 
   var checkCallback = function() {
-    var scriptElement = document.getElementById(id);
-    scriptElement.parentNode.removeChild(scriptElement);
+    removeScript();
 
     if (!success) {
       delete window[id];
@@ -27,18 +27,50 @@ function scriptRequest(src, callback) {
     }
   };
 
-  var script = document.createElement('script');
-  script.onreadystatechange = function() {
-    if (this.readyState === 'complete' || this.readyState === 'loaded') {
-      this.onreadystatechange = null;
-      setTimeout(checkCallback, 0);
-    }
+  var appendScript = function() {
+    var script = document.createElement('script');
+
+    var setListening = function(value) {
+      if (value) {
+        script.addEventListener('readystatechange', onChangeState);
+        script.addEventListener('load', onLoad);
+        script.addEventListener('error', onError);
+      } else {
+        script.removeEventListener('readystatechange', onChangeState);
+        script.removeEventListener('load', onLoad);
+        script.removeEventListener('error', onError);
+      }
+    };
+
+    var onLoad = function(evt) {
+      setListening(evt.target, false);
+      checkCallback();
+    };
+
+    var onError = function(evt) {
+      setListening(evt.target, false);
+      checkCallback();
+    };
+
+    var onChangeState = function(evt) {
+      if (evt.target.readyState === 'complete' || evt.target.readyState === 'loaded') {
+        setListening(evt.target, false);
+        setTimeout(checkCallback, 0);
+      }
+    };
+
+    setListening(script, true);
+    script.id = id;
+    script.src = src + '?callback=' + id;
+    document.body.appendChild(script);
   };
-  script.onload = checkCallback;
-  script.onerror = checkCallback;
-  script.id = id;
-  script.src = src + '?callback=' + id;
-  document.body.appendChild(script);
+
+  var removeScript = function() {
+    var script = document.getElementById(id);
+    script.parentNode.removeChild(script);
+  };
+
+  appendScript();
 }
 
 function onReviewsLoaded(data) {
@@ -52,4 +84,4 @@ function onReviewsLoaded(data) {
   }
 }
 
-scriptRequest('http://localhost:1506/api/reviews', onReviewsLoaded);
+scriptRequest(reviewsSrc, onReviewsLoaded);
