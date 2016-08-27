@@ -98,6 +98,8 @@ var loadAndShowReviews = function() {
         img.src = image.src;
         img.width = imageSize;
         img.height = imageSize;
+        img.alt = data.author.name;
+        img.title = data.author.name;
       };
 
       var onLoadError = function() {
