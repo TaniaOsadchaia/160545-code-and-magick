@@ -1,14 +1,13 @@
 'use strict';
 
 var reviews = null;
-var reviewsSrc = 'http://localhost:1506/api/reviews';
 
 /**
 * Запрос на сервер. JSONP
 * @param {String} src
 * @param {function} callback
 */
-function scriptRequest(src, callback) {
+var scriptRequest = function(src, callback) {
   var success = false;
   var id = 'cb_' + String(Math.random()).slice(-6);
 
@@ -71,17 +70,103 @@ function scriptRequest(src, callback) {
   };
 
   appendScript();
-}
+};
 
-function onReviewsLoaded(data) {
-  reviews = data;
-  if (reviews instanceof Array) {
-    // success
-    console.log('Loaded ' + reviews.length + ' reviews');
-  } else {
-    // error
+var loadAndShowReviews = function() {
+  var reviewsSrc = 'http://localhost:1506/api/reviews';
+
+  var setFiltersVisible = function(value) {
+    var htmlElement = document.querySelector('.reviews-filter');
+    if (htmlElement) {
+      if (value) {
+        htmlElement.classList.remove('invisible');
+      } else {
+        htmlElement.classList.add('invisible');
+      }
+    }
+  };
+
+  var fillHtmlElement = function(htmlElement, data) {
+    var fillImage = function() {
+      var image = new Image();
+      var imageSize = '124px';
+      var img = htmlElement.querySelector('.review-author');
+
+      var onLoadSuccess = function() {
+        setListeners(false);
+
+        img.src = image.src;
+        img.width = imageSize;
+        img.height = imageSize;
+      };
+
+      var onLoadError = function() {
+        setListeners(false);
+
+        htmlElement.classList.add('review-load-failure');
+      };
+
+      var setListeners = function(value) {
+        if (value) {
+          image.addEventListener('load', onLoadSuccess);
+          image.addEventListener('error', onLoadError);
+        } else {
+          image.removeEventListener('load', onLoadSuccess);
+          image.removeEventListener('error', onLoadError);
+        }
+      };
+
+      setListeners(true);
+      image.src = data.author.picture;
+    };
+
+    var setInnerHtml = function(className, value) {
+      htmlElement.querySelector('.' + className).innerHTML = String(value);
+    };
+
+    setInnerHtml('review-rating', data.rating);
+    setInnerHtml('review-text', data.description);
+    fillImage(htmlElement, data);
+  };
+
+  var show = function() {
+    var htmlElement;
+    var clone;
+    var template = document.querySelector('#review-template');
+    var parent = document.querySelector('.reviews-list');
+
+    reviews.forEach(function(item) {
+      clone = document.importNode(template.content, true);
+      htmlElement = clone.children[0];
+      fillHtmlElement(htmlElement, item);
+      parent.appendChild(htmlElement);
+    });
+  };
+
+  var onLoadedSuccess = function(data) {
+    reviews = data;
+    show();
+  };
+
+  var onLoadedError = function() {
+    reviews = null;
     console.error('Can\'t load reviews');
-  }
-}
+  };
 
-scriptRequest(reviewsSrc, onReviewsLoaded);
+  var onLoaded = function(data) {
+    if (data instanceof Array) {
+      onLoadedSuccess(data);
+    } else {
+      onLoadedError();
+    }
+    setFiltersVisible(true);
+  };
+
+  setFiltersVisible(false);
+  scriptRequest(reviewsSrc, onLoaded);
+};
+
+loadAndShowReviews();
+
+
+
