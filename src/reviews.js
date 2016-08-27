@@ -89,17 +89,17 @@ var loadAndShowReviews = function() {
   var fillHtmlElement = function(htmlElement, data) {
     var fillImage = function() {
       var image = new Image();
-      var imageSize = '124px';
-      var img = htmlElement.querySelector('.review-author');
 
       var onLoadSuccess = function() {
-        setListeners(false);
-
+        var size = '124px';
+        var img = htmlElement.querySelector('.review-author');
         img.src = image.src;
-        img.width = imageSize;
-        img.height = imageSize;
+        img.width = size;
+        img.height = size;
         img.alt = data.author.name;
         img.title = data.author.name;
+
+        setListeners(false);
       };
 
       var onLoadError = function() {
@@ -132,10 +132,10 @@ var loadAndShowReviews = function() {
   };
 
   var show = function() {
-    var htmlElement;
-    var clone;
     var template = document.querySelector('#review-template');
     var parent = document.querySelector('.reviews-list');
+    var htmlElement;
+    var clone;
 
     reviews.forEach(function(item) {
       clone = document.importNode(template.content, true);
