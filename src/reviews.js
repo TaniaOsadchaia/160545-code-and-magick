@@ -75,24 +75,24 @@ var scriptRequest = function(src, callback) {
 var loadAndShowReviews = function() {
   var reviewsSrc = 'http://localhost:1506/api/reviews';
 
-  var setFiltersVisible = function(value) {
-    var htmlElement = document.querySelector('.reviews-filter');
-    if (htmlElement) {
-      if (value) {
-        htmlElement.classList.remove('invisible');
+  var setFiltersVisible = function(isVisible) {
+    var reviewsFilter = document.querySelector('.reviews-filter');
+    if (reviewsFilter) {
+      if (isVisible) {
+        reviewsFilter.classList.remove('invisible');
       } else {
-        htmlElement.classList.add('invisible');
+        reviewsFilter.classList.add('invisible');
       }
     }
   };
 
-  var fillHtmlElement = function(htmlElement, data) {
+  var fillReview = function(reviewElement, data) {
     var fillImage = function() {
       var image = new Image();
 
       var onLoadSuccess = function() {
         var size = '124px';
-        var img = htmlElement.querySelector('.review-author');
+        var img = reviewElement.querySelector('.review-author');
         img.src = image.src;
         img.width = size;
         img.height = size;
@@ -105,11 +105,11 @@ var loadAndShowReviews = function() {
       var onLoadError = function() {
         setListeners(false);
 
-        htmlElement.classList.add('review-load-failure');
+        reviewElement.classList.add('review-load-failure');
       };
 
-      var setListeners = function(value) {
-        if (value) {
+      var setListeners = function(isListening) {
+        if (isListening) {
           image.addEventListener('load', onLoadSuccess);
           image.addEventListener('error', onLoadError);
         } else {
@@ -123,25 +123,25 @@ var loadAndShowReviews = function() {
     };
 
     var setInnerHtml = function(className, value) {
-      htmlElement.querySelector('.' + className).innerHTML = String(value);
+      reviewElement.querySelector('.' + className).innerHTML = String(value);
     };
 
     setInnerHtml('review-rating', data.rating);
     setInnerHtml('review-text', data.description);
-    fillImage(htmlElement, data);
+    fillImage();
   };
 
   var show = function() {
     var template = document.querySelector('#review-template');
     var parent = document.querySelector('.reviews-list');
-    var htmlElement;
-    var clone;
+    var cloneNode;
+    var cloneElement;
 
-    reviews.forEach(function(item) {
-      clone = document.importNode(template.content, true);
-      htmlElement = clone.children[0];
-      fillHtmlElement(htmlElement, item);
-      parent.appendChild(htmlElement);
+    reviews.forEach(function(review) {
+      cloneNode = document.importNode(template.content, true);
+      cloneElement = cloneNode.querySelector('.review');
+      fillReview(cloneElement, review);
+      parent.appendChild(cloneElement);
     });
   };
 
