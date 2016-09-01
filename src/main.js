@@ -1,27 +1,33 @@
 'use strict';
 
-require('./form');
-require('./game');
-require('./reviews');
-
 (function() {
-  var game = new window.Game(document.querySelector('.demo'));
-  game.initializeLevelAndStart();
-  game.setGameStatus(window.Game.Verdict.INTRO);
+  var initReviews = require('./reviews');
+  var createForm = require('./form');
+  var getGameClass = require('./game');
 
-  var formOpenButton = document.querySelector('.reviews-controls-new');
-
-  /** @param {MouseEvent} evt */
-  formOpenButton.onclick = function(evt) {
-    evt.preventDefault();
-
-    window.form.open(function() {
-      game.setGameStatus(window.Game.Verdict.PAUSE);
-      game.setDeactivated(true);
-    });
+  var init = function() {
+    var formOpenButton = document.querySelector('.reviews-controls-new');
+    var gameContainer = document.querySelector('.demo');
+    // create
+    window.Game = getGameClass();
+    window.game = new window.Game(gameContainer);
+    window.form = createForm();
+    // behaviour
+    formOpenButton.onclick = function(evt) {
+      evt.preventDefault();
+      window.form.open(function() {
+        window.game.setGameStatus(window.Game.Verdict.PAUSE);
+        window.game.setDeactivated(true);
+      });
+    };
+    window.form.onClose = function() {
+      window.game.setDeactivated(false);
+    };
+    // start
+    window.game.initializeLevelAndStart();
+    window.game.setGameStatus(window.Game.Verdict.INTRO);
   };
 
-  window.form.onClose = function() {
-    game.setDeactivated(false);
-  };
+  init();
+  initReviews();
 })();
