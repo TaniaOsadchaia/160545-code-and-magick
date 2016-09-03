@@ -6,7 +6,7 @@
 * @param {function} onSuccess
 * @param {function} onError
 */
-module.exports = function(src, onSuccess, onError) {
+var loadImage = function(src, onSuccess, onError) {
   var image = new Image();
 
   var onLoadSuccess = function() {
@@ -36,3 +36,5 @@ module.exports = function(src, onSuccess, onError) {
   setListening(true);
   image.src = src;
 };
+
+module.exports = loadImage;

@@ -3,7 +3,7 @@
 /**
 * createForm
 */
-module.exports = function() {
+var createForm = function() {
   return (function() {
     var GRACE_HOPPER_BIRTHDAY = new Date(1906, 11, 9);
     var COOKIE_NAME = 'review-name';
@@ -166,5 +166,7 @@ module.exports = function() {
     return form;
   })();
 };
+
+module.exports = createForm;
 
 

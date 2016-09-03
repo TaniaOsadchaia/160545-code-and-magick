@@ -3,7 +3,7 @@
 /**
 * getGameClass
 */
-module.exports = function() {
+var getGameClass = function() {
   return (function() {
     /**
      * @const
@@ -816,3 +816,5 @@ module.exports = function() {
     return Game;
   })();
 };
+
+module.exports = getGameClass;

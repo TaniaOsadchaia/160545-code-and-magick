@@ -5,7 +5,7 @@
 * @param {String} src
 * @param {function} callback
 */
-module.exports = function(src, callback) {
+var loadScript = function(src, callback) {
   var success = false;
   var id = 'cb_' + String(Math.random()).slice(-6);
 
@@ -69,3 +69,5 @@ module.exports = function(src, callback) {
 
   appendScript();
 };
+
+module.exports = loadScript;

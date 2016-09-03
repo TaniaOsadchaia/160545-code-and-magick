@@ -3,7 +3,7 @@
 /**
 * createReviews
 */
-module.exports = function() {
+var createReviews = function() {
   var reviews = null;
   var reviewsSrc = 'http://localhost:1506/api/reviews';
   var loadScript = require('./load');
@@ -56,3 +56,5 @@ module.exports = function() {
   setFiltersVisible(false);
   loadScript(reviewsSrc, onLoaded);
 };
+
+module.exports = createReviews;
