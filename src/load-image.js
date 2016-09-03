@@ -12,7 +12,7 @@ var loadImage = function(src, onSuccess, onError) {
   var onLoadSuccess = function() {
     setListening(false);
     if (typeof onSuccess === 'function') {
-      onSuccess();
+      onSuccess(image);
     }
   };
 

@@ -1,5 +1,7 @@
 'use strict';
 
+var loadImage = require('./load-image');
+
 /**
 * drawReview
 * @param {HTMLElement} reviewElement
@@ -7,7 +9,6 @@
 */
 var drawReview = function(reviewElement, data) {
   var drawUserPhoto = function() {
-    var loadImage = require('./load-image');
     var src = data.author.picture;
 
     var onLoadSuccess = function() {

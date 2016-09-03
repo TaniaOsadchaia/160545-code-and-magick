@@ -31,15 +31,18 @@
 
   var initGallery = function() {
     var picturesUrls = [];
-    var elemsList = document.querySelectorAll('.photogallery-image');
-    elemsList.forEach(function(item) {
-      var img = item.querySelector('img');
-      var url = img.src;
-      picturesUrls.push(url);
-      img.addEventListener('click', function() {
-        window.gallery.show(0);
-      });
-    });
+    var img;
+    var elems = document.querySelectorAll('.photogallery-image');
+    for (var i = 0; i < elems.length; i++) {
+      img = elems[i].querySelector('img');
+      picturesUrls.push(img.src);
+      (function() {
+        var index = i;
+        img.addEventListener('click', function() {
+          window.gallery.show(index);
+        });
+      })();
+    }
     window.gallery = new Gallery(picturesUrls);
   };
 

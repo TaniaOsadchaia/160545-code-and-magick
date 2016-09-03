@@ -1,13 +1,14 @@
 'use strict';
 
+var loadScript = require('./load');
+var drawReview = require('./review');
+
 /**
 * createReviews
 */
 var createReviews = function() {
   var reviews = null;
   var reviewsSrc = 'http://localhost:1506/api/reviews';
-  var loadScript = require('./load');
-  var drawReview = require('./review');
 
   var setFiltersVisible = function(isVisible) {
     var reviewsFilter = document.querySelector('.reviews-filter');
