@@ -1,13 +1,14 @@
 'use strict';
 
+var loadScript = require('./load');
+var drawReview = require('./review');
+
 /**
 * createReviews
 */
-module.exports = function() {
+var createReviews = function() {
   var reviews = null;
   var reviewsSrc = 'http://localhost:1506/api/reviews';
-  var loadScript = require('./load');
-  var drawReview = require('./review');
 
   var setFiltersVisible = function(isVisible) {
     var reviewsFilter = document.querySelector('.reviews-filter');
@@ -56,3 +57,5 @@ module.exports = function() {
   setFiltersVisible(false);
   loadScript(reviewsSrc, onLoaded);
 };
+
+module.exports = createReviews;

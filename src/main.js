@@ -3,13 +3,14 @@
 (function() {
   var initReviews = require('./reviews');
   var createForm = require('./form');
-  var getGameClass = require('./game');
+  var Game = require('./game');
+  var Gallery = require('./gallery');
 
   var init = function() {
     var formOpenButton = document.querySelector('.reviews-controls-new');
     var gameContainer = document.querySelector('.demo');
     // create
-    window.Game = getGameClass();
+    window.Game = Game;
     window.game = new window.Game(gameContainer);
     window.form = createForm();
     // behaviour
@@ -28,6 +29,29 @@
     window.game.setGameStatus(window.Game.Verdict.INTRO);
   };
 
+  var initGallery = function() {
+    var photogallery = document.querySelector('.photogallery');
+    var picturesUrls = [];
+    var elems = photogallery.querySelectorAll('.photogallery-image');
+    elems.forEach(function(item) {
+      var img = item.querySelector('img');
+      picturesUrls.push(img.src);
+    });
+
+    photogallery.addEventListener('click', function(evt) {
+      evt.preventDefault();
+      var target = evt.target;
+      var src = target.src;
+      var index = picturesUrls.indexOf(src);
+      if (index >= 0) {
+        window.gallery.show(index);
+      }
+    });
+
+    window.gallery = new Gallery(picturesUrls);
+  };
+
   init();
   initReviews();
+  initGallery();
 })();

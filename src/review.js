@@ -1,13 +1,14 @@
 'use strict';
 
+var loadImage = require('./load-image');
+
 /**
 * drawReview
 * @param {HTMLElement} reviewElement
 * @param {object} data
 */
-module.exports = function(reviewElement, data) {
+var drawReview = function(reviewElement, data) {
   var drawUserPhoto = function() {
-    var loadImage = require('./load-image');
     var src = data.author.picture;
 
     var onLoadSuccess = function() {
@@ -35,3 +36,5 @@ module.exports = function(reviewElement, data) {
   setInnerHtml('review-text', data.description);
   drawUserPhoto();
 };
+
+module.exports = drawReview;
