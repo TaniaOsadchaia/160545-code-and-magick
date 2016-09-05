@@ -18,16 +18,20 @@ var Review = function(data) {
 
   var self = this;
 
-  this.onQuizAnswerClick = function(evt) {
+  this.onQuizClick = function(evt) {
+    var elems;
+    var quizClass = 'review-quiz-answer';
     var activeClass = 'review-quiz-answer-active';
-    var elems = self.element.querySelectorAll('.review-quiz-answer');
-    elems.forEach(function(elem) {
-      if (elem === evt.target) {
-        elem.classList.add(activeClass);
-      } else {
-        elem.classList.remove(activeClass);
-      }
-    });
+    if (evt.target.classList.contains(quizClass)) {
+      elems = self.element.querySelectorAll('.' + quizClass);
+      elems.forEach(function(elem) {
+        if (elem === evt.target) {
+          elem.classList.add(activeClass);
+        } else {
+          elem.classList.remove(activeClass);
+        }
+      });
+    }
   };
 };
 
@@ -64,15 +68,12 @@ Review.prototype.draw = function() {
 };
 
 Review.prototype.setListeners = function(isListening) {
-  var self = this;
-  var elems = this.element.querySelectorAll('.review-quiz-answer');
-  elems.forEach(function(elem) {
-    if (isListening) {
-      elem.addEventListener('click', self.onQuizAnswerClick);
-    } else {
-      elem.removeEventListener('click', self.onQuizAnswerClick);
-    }
-  });
+  var elem = this.element.querySelector('.review-quiz');
+  if (isListening) {
+    elem.addEventListener('click', this.onQuizClick);
+  } else {
+    elem.removeEventListener('click', this.onQuizClick);
+  }
 };
 
 Review.prototype.remove = function() {
