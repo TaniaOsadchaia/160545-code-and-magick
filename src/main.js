@@ -39,6 +39,7 @@
     });
 
     photogallery.addEventListener('click', function(evt) {
+      evt.preventDefault();
       var target = evt.target;
       var src = target.src;
       var index = picturesUrls.indexOf(src);
