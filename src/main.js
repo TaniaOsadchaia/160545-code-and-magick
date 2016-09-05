@@ -3,14 +3,14 @@
 (function() {
   var initReviews = require('./reviews');
   var createForm = require('./form');
-  var getGameClass = require('./game');
+  var Game = require('./game');
   var Gallery = require('./gallery');
 
   var init = function() {
     var formOpenButton = document.querySelector('.reviews-controls-new');
     var gameContainer = document.querySelector('.demo');
     // create
-    window.Game = getGameClass();
+    window.Game = Game;
     window.game = new window.Game(gameContainer);
     window.form = createForm();
     // behaviour
