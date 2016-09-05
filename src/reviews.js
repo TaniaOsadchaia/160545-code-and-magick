@@ -1,13 +1,13 @@
 'use strict';
 
 var loadScript = require('./load');
-var drawReview = require('./review');
+var Review = require('./review');
 
 /**
 * createReviews
 */
 var createReviews = function() {
-  var reviews = null;
+  var reviews = [];
   var reviewsSrc = 'http://localhost:1506/api/reviews';
 
   var setFiltersVisible = function(isVisible) {
@@ -21,23 +21,12 @@ var createReviews = function() {
     }
   };
 
-  var show = function() {
-    var template = document.querySelector('#review-template');
-    var parent = document.querySelector('.reviews-list');
-    var cloneNode;
-    var cloneElement;
-
-    reviews.forEach(function(review) {
-      cloneNode = document.importNode(template.content, true);
-      cloneElement = cloneNode.querySelector('.review');
-      drawReview(cloneElement, review);
-      parent.appendChild(cloneElement);
-    });
-  };
-
   var onLoadedSuccess = function(data) {
-    reviews = data;
-    show();
+    data.forEach(function(reviewData) {
+      var review = new Review(reviewData);
+      review.draw();
+      reviews.push(review);
+    });
   };
 
   var onLoadedError = function() {
