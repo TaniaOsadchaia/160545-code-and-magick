@@ -64,20 +64,18 @@ Review.prototype.draw = function() {
   setInnerHtml('review-rating', self.data.rating);
   setInnerHtml('review-text', self.data.description);
   drawUserPhoto();
-  this.setListeners(true);
+
+  this.addListeners();
 };
 
-Review.prototype.setListeners = function(isListening) {
+Review.prototype.addListeners = function() {
   var elem = this.element.querySelector('.review-quiz');
-  if (isListening) {
-    elem.addEventListener('click', this.onQuizClick);
-  } else {
-    elem.removeEventListener('click', this.onQuizClick);
-  }
+  elem.addEventListener('click', this.onQuizClick);
 };
 
 Review.prototype.remove = function() {
-  this.setListeners(false);
+  var elem = this.element.querySelector('.review-quiz');
+  elem.removeEventListener('click', this.onQuizClick);
 };
 
 module.exports = Review;

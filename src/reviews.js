@@ -25,6 +25,7 @@ var createReviews = function() {
     data.forEach(function(reviewData) {
       var review = new Review(reviewData);
       review.draw();
+      review.addListeners();
       reviews.push(review);
     });
   };
