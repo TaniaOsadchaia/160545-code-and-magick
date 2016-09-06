@@ -1,6 +1,6 @@
 'use strict';
 
-var loadScript = require('./load');
+var load = require('./load');
 var Review = require('./review');
 
 /**
@@ -25,7 +25,6 @@ var createReviews = function() {
     data.forEach(function(reviewData) {
       var review = new Review(reviewData);
       review.draw();
-      review.addListeners();
       reviews.push(review);
     });
   };
@@ -45,7 +44,7 @@ var createReviews = function() {
   };
 
   setFiltersVisible(false);
-  loadScript(reviewsSrc, onLoaded);
+  load(reviewsSrc, null, onLoaded);
 };
 
 module.exports = createReviews;
