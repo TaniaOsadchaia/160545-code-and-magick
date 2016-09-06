@@ -14,21 +14,21 @@ var Gallery = function(picturesUrls) {
   this.btnLeft = document.querySelector('.overlay-gallery-control-left');
   this.btnRight = document.querySelector('.overlay-gallery-control-right');
 
-  var that = this;
+  var self = this;
 
   this.onCloseClick = function() {
-    that.hide();
+    self.hide();
   };
 
   this.onLeftClick = function() {
-    if (that.activePicture > 0) {
-      that.setActivePicture(that.activePicture - 1);
+    if (self.activePicture > 0) {
+      self.setActivePicture(self.activePicture - 1);
     }
   };
 
   this.onRightClick = function() {
-    if (that.activePicture < that.pictures.length - 1) {
-      that.setActivePicture(that.activePicture + 1);
+    if (self.activePicture < self.pictures.length - 1) {
+      self.setActivePicture(self.activePicture + 1);
     }
   };
 };
