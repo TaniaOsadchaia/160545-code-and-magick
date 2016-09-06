@@ -7,44 +7,69 @@ var Review = require('./review');
 * createReviews
 */
 var createReviews = function() {
+  var REQUEST_URL = 'http://localhost:1506/api/reviews';
+  var PAGE_SIZE = 3;
+  var FILTER_DEFAULT = 'default';
+
   var reviews = [];
-  var reviewsSrc = 'http://localhost:1506/api/reviews';
+  var pageNumber = 0;
+  var filterId = FILTER_DEFAULT;
 
-  var setFiltersVisible = function(isVisible) {
-    var reviewsFilter = document.querySelector('.reviews-filter');
-    if (reviewsFilter) {
-      if (isVisible) {
-        reviewsFilter.classList.remove('invisible');
-      } else {
-        reviewsFilter.classList.add('invisible');
-      }
-    }
-  };
+  var btnMore = document.querySelector('.reviews-controls-more');
+  var elemFilters = document.querySelector('.reviews-filter');
 
-  var onLoadedSuccess = function(data) {
-    data.forEach(function(reviewData) {
-      var review = new Review(reviewData);
-      review.draw();
-      reviews.push(review);
+  var clearReviews = function() {
+    reviews.forEach(function(review) {
+      review.destroy();
     });
+    reviews = [];
+    pageNumber = 0;
   };
 
-  var onLoadedError = function() {
-    reviews = null;
-    console.error('Can\'t load reviews');
+  var loadCurrentPage = function() {
+    var params = {
+      from: pageNumber * PAGE_SIZE,
+      to: pageNumber * PAGE_SIZE + PAGE_SIZE,
+      filter: filterId
+    };
+    load(REQUEST_URL, params, onLoad);
   };
 
-  var onLoaded = function(data) {
-    if (data instanceof Array) {
-      onLoadedSuccess(data);
-    } else {
-      onLoadedError();
+  var onLoad = function(reviewsDatas) {
+    if (reviewsDatas instanceof Array) {
+      reviewsDatas.forEach(function(reviewData) {
+        var review = new Review(reviewData);
+        review.draw();
+        reviews.push(review);
+      });
     }
-    setFiltersVisible(true);
   };
 
-  setFiltersVisible(false);
-  load(reviewsSrc, null, onLoaded);
+  var initBtnMore = function() {
+    btnMore.classList.remove('invisible');
+    btnMore.addEventListener('click', onMoreClick);
+  };
+
+  var onMoreClick = function() {
+    pageNumber++;
+    loadCurrentPage();
+  };
+
+  var initFilters = function() {
+    elemFilters.addEventListener('click', onFilterClick, true);
+  };
+
+  var onFilterClick = function(evt) {
+    if (evt.target.classList.contains('reviews-filter-item')) {
+      filterId = evt.target.control.id;
+      clearReviews();
+      loadCurrentPage();
+    }
+  };
+
+  initBtnMore();
+  initFilters();
+  loadCurrentPage();
 };
 
 module.exports = createReviews;

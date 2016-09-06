@@ -10,14 +10,10 @@ var load = function(url, params, callback) {
   var xhr = new XMLHttpRequest();
 
   var getRequestUrl = function() {
-    var requestUrl = url;
-    if (params) {
-      requestUrl = requestUrl +
-        '?from=' + (params.from || 0) +
-        '&to=' + (params.to || Infinity) +
-        '&filter=' + (params.filter || 'default');
-    }
-    return requestUrl;
+    return url +
+      '?from=' + (params.from || 0) +
+      '&to=' + (params.to || Infinity) +
+      '&filter=' + (params.filter || 'default');
   };
 
   var onSuccess = function(evt) {

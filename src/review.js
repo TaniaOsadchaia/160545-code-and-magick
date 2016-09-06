@@ -73,9 +73,16 @@ Review.prototype.addListeners = function() {
   elem.addEventListener('click', this.onQuizClick);
 };
 
-Review.prototype.remove = function() {
+Review.prototype.removeListeners = function() {
   var elem = this.element.querySelector('.review-quiz');
   elem.removeEventListener('click', this.onQuizClick);
+};
+
+Review.prototype.destroy = function() {
+  this.removeListeners();
+  this.element.parentNode.removeChild(this.element);
+  this.element = null;
+  this.data = null;
 };
 
 module.exports = Review;
