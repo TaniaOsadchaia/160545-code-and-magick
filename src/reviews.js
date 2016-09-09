@@ -35,10 +35,11 @@ var createReviews = function() {
     load(REQUEST_URL, params, onLoad);
   };
 
-  var onLoad = function(reviewsDatas) {
-    if (reviewsDatas instanceof Array) {
-      reviewsDatas.forEach(function(reviewData) {
-        var review = new Review(reviewData);
+  var onLoad = function(reviewsData) {
+    var review;
+    if (reviewsData instanceof Array) {
+      reviewsData.forEach(function(reviewData) {
+        review = new Review(reviewData);
         review.draw();
         reviews.push(review);
       });

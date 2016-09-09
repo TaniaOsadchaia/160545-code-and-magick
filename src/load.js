@@ -1,5 +1,6 @@
 'use strict';
 
+var DEFAULT_LENGTH = 1000;
 /**
 * loadScript
 * @param {String} url
@@ -10,16 +11,19 @@ var load = function(url, params, callback) {
   var xhr = new XMLHttpRequest();
 
   var getRequestUrl = function() {
+    var from = (params.from || 0);
+    var to = (params.to || (from + DEFAULT_LENGTH));
+    var filter = (params.filter || 'default');
     return url +
-      '?from=' + (params.from || 0) +
-      '&to=' + (params.to || Infinity) +
-      '&filter=' + (params.filter || 'default');
+      '?from=' + from +
+      '&to=' + to +
+      '&filter=' + filter;
   };
 
   var onSuccess = function(evt) {
-    var datas = JSON.parse(evt.target.response);
+    var response = JSON.parse(evt.target.response);
     removeListeners();
-    callback(datas);
+    callback(response);
   };
 
   var onError = function() {
