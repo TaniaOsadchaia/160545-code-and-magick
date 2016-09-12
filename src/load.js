@@ -1,73 +1,45 @@
 'use strict';
 
+var DEFAULT_LENGTH = 1000;
 /**
 * loadScript
-* @param {String} src
+* @param {String} url
+* @param {Object} params = {from, to, filter:String}
 * @param {function} callback
 */
-var loadScript = function(src, callback) {
-  var success = false;
-  var id = 'cb_' + String(Math.random()).slice(-6);
+var load = function(url, params, callback) {
+  var xhr = new XMLHttpRequest();
 
-  window[id] = function(data) {
-    success = true;
-    delete window[id];
-    callback(data);
+  var getRequestUrl = function() {
+    var from = (params.from || 0);
+    var to = (params.to || (from + DEFAULT_LENGTH));
+    var filter = (params.filter || 'default');
+    return url +
+      '?from=' + from +
+      '&to=' + to +
+      '&filter=' + filter;
   };
 
-  var checkCallback = function() {
-    removeScript();
-
-    if (!success) {
-      delete window[id];
-      callback(null); // error
-    }
+  var onSuccess = function(evt) {
+    var response = JSON.parse(evt.target.response);
+    removeListeners();
+    callback(response);
   };
 
-  var appendScript = function() {
-    var script = document.createElement('script');
-
-    var setListening = function(value) {
-      if (value) {
-        script.addEventListener('readystatechange', onChangeState);
-        script.addEventListener('load', onLoad);
-        script.addEventListener('error', onError);
-      } else {
-        script.removeEventListener('readystatechange', onChangeState);
-        script.removeEventListener('load', onLoad);
-        script.removeEventListener('error', onError);
-      }
-    };
-
-    var onLoad = function() {
-      setListening(false);
-      checkCallback();
-    };
-
-    var onError = function() {
-      setListening(false);
-      checkCallback();
-    };
-
-    var onChangeState = function(evt) {
-      if (evt.target.readyState === 'complete' || evt.target.readyState === 'loaded') {
-        setListening(false);
-        setTimeout(checkCallback, 0);
-      }
-    };
-
-    setListening(true);
-    script.id = id;
-    script.src = src + '?callback=' + id;
-    document.body.appendChild(script);
+  var onError = function() {
+    removeListeners();
+    callback(null);
   };
 
-  var removeScript = function() {
-    var script = document.getElementById(id);
-    script.parentNode.removeChild(script);
+  var removeListeners = function() {
+    xhr.removeEventListener('load', onSuccess);
+    xhr.removeEventListener('error', onError);
   };
 
-  appendScript();
+  xhr.open('GET', getRequestUrl());
+  xhr.addEventListener('load', onSuccess);
+  xhr.addEventListener('error', onError);
+  xhr.send();
 };
 
-module.exports = loadScript;
+module.exports = load;

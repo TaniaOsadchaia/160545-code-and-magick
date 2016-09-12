@@ -1,5 +1,6 @@
 'use strict';
 
 module.exports = function(list, from, to) {
-  return list;
+  var pageList = list.slice(from, to);
+  return pageList;
 };
