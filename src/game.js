@@ -1,5 +1,7 @@
 'use strict';
 
+var throttle = require('./throttle');
+
 /**
  * @const
  * @type {number}
@@ -259,11 +261,11 @@ var Game = function(container) {
   this.ctx = this.canvas.getContext('2d');
 
   this.clouds = document.querySelector('.header-clouds');
-  this._lastScrollUpdate = 0;
 
   this._onKeyDown = this._onKeyDown.bind(this);
   this._onKeyUp = this._onKeyUp.bind(this);
-  this._onScroll = this._onScroll.bind(this);
+  this._onScroll = null;
+  this._onThrottleScroll = this._onThrottleScroll.bind(this);
   this._pauseListener = this._pauseListener.bind(this);
 
   this.setDeactivated(false);
@@ -808,7 +810,6 @@ Game.prototype = {
   _initializeGameListeners: function() {
     window.addEventListener('keydown', this._onKeyDown);
     window.addEventListener('keyup', this._onKeyUp);
-    window.addEventListener('scroll', this._onScroll);
   },
 
   /** @private */
@@ -819,7 +820,9 @@ Game.prototype = {
 
   /** @private */
   _initializeScrollListener: function() {
+    this._onScroll = throttle(this._onThrottleScroll, THROTTLE_TIMEOUT);
     window.addEventListener('scroll', this._onScroll);
+    this._onScroll(); // first updating
   },
 
   /** @private */
@@ -830,18 +833,13 @@ Game.prototype = {
   /**
    * @private
    */
-  _onScroll: function() {
-    var now = Date.now();
-    if (this._lastScrollUpdate <= now - THROTTLE_TIMEOUT) {
-      this._lastScrollUpdate = now;
+  _onThrottleScroll: function() {
+    if (this._isElemVisible(this.clouds)) {
+      this.clouds.style.backgroundPositionX = window.scrollY + 'px';
+    }
 
-      if (this._isElemVisible(this.clouds)) {
-        this.clouds.style.backgroundPositionX = window.scrollY + 'px';
-      }
-
-      if (!this._isElemVisible(this.container)) {
-        this.setGameStatus(Verdict.PAUSE);
-      }
+    if (!this._isElemVisible(this.container)) {
+      this.setGameStatus(Verdict.PAUSE);
     }
   },
 
