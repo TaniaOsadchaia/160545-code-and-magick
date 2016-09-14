@@ -1,5 +1,7 @@
 'use strict';
 
+var throttle = require('./throttle');
+
 /**
  * @const
  * @type {number}
@@ -11,6 +13,12 @@ var HEIGHT = 300;
  * @type {number}
  */
 var WIDTH = 700;
+
+/**
+ * @const
+ * @type {number}
+ */
+var THROTTLE_TIMEOUT = 100;
 
 /**
  * ID уровней.
@@ -252,11 +260,16 @@ var Game = function(container) {
 
   this.ctx = this.canvas.getContext('2d');
 
+  this.clouds = document.querySelector('.header-clouds');
+
   this._onKeyDown = this._onKeyDown.bind(this);
   this._onKeyUp = this._onKeyUp.bind(this);
+  this._onScroll = null;
+  this._onThrottleScroll = this._onThrottleScroll.bind(this);
   this._pauseListener = this._pauseListener.bind(this);
 
   this.setDeactivated(false);
+  this._initializeScrollListener();
 };
 
 Game.prototype = {
@@ -803,6 +816,36 @@ Game.prototype = {
   _removeGameListeners: function() {
     window.removeEventListener('keydown', this._onKeyDown);
     window.removeEventListener('keyup', this._onKeyUp);
+  },
+
+  /** @private */
+  _initializeScrollListener: function() {
+    this._onScroll = throttle(this._onThrottleScroll, THROTTLE_TIMEOUT);
+    window.addEventListener('scroll', this._onScroll);
+    this._onScroll(); // first updating
+  },
+
+  /** @private */
+  _removeScrollListener: function() {
+    window.removeEventListener('scroll', this._onScroll);
+  },
+
+  /**
+   * @private
+   */
+  _onThrottleScroll: function() {
+    if (this._isElemVisible(this.clouds)) {
+      this.clouds.style.backgroundPositionX = window.scrollY + 'px';
+    }
+
+    if (!this._isElemVisible(this.container)) {
+      this.setGameStatus(Verdict.PAUSE);
+    }
+  },
+
+  _isElemVisible: function(elem) {
+    var rect = elem.getBoundingClientRect();
+    return (rect.bottom > 0 && rect.top < window.innerHeight);
   }
 };
 
