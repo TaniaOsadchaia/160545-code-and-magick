@@ -11,7 +11,7 @@ var throttle = function(func, timeout) {
     var now = Date.now();
     if (now >= lastCall + timeout) {
       lastCall = now;
-      func();
+      func.apply(this, Array.prototype.slice.call(arguments));
     }
   };
 };
