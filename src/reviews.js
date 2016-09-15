@@ -9,6 +9,8 @@ var Review = require('./review');
 var createReviews = function() {
   var REQUEST_URL = 'http://localhost:1506/api/reviews';
   var PAGE_SIZE = 3;
+
+  var FILTER_KEY = 'reviews_filter';
   var FILTER_DEFAULT = 'default';
 
   var reviews = [];
@@ -62,14 +64,33 @@ var createReviews = function() {
 
   var onFilterClick = function(evt) {
     if (evt.target.classList.contains('reviews-filter-item')) {
-      filterId = evt.target.control.id;
+      setFilter(evt.target.control.id);
       clearReviews();
       loadCurrentPage();
     }
   };
 
+  var setFilter = function(filter) {
+    filterId = filter;
+    localStorage.setItem(FILTER_KEY, filter);
+  };
+
+  var loadCurrentFilter = function() {
+    var filter = localStorage.getItem(FILTER_KEY);
+    filterId = filter ? filter : FILTER_DEFAULT;
+    checkFilterElement(filterId);
+  };
+
+  var checkFilterElement = function(filter) {
+    var elem = document.getElementById(filter);
+    if (elem) {
+      elem.checked = true;
+    }
+  };
+
   initBtnMore();
   initFilters();
+  loadCurrentFilter();
   loadCurrentPage();
 };
 
