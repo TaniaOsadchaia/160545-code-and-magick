@@ -1,7 +1,7 @@
 'use strict';
 
 (function() {
-  var initReviews = require('./reviews');
+  var ReviewsList = require('./reviews');
   var ReviewForm = require('./form');
   var Game = require('./game');
   var Gallery = require('./gallery');
@@ -11,8 +11,9 @@
     var gameContainer = document.querySelector('.demo');
     // create
     window.Game = Game;
-    window.game = new window.Game(gameContainer);
+    window.game = new Game(gameContainer);
     window.form = new ReviewForm();
+    window.reviews = new ReviewsList();
     // behaviour
     formOpenButton.onclick = function(evt) {
       evt.preventDefault();
@@ -52,6 +53,5 @@
   };
 
   init();
-  initReviews();
   initGallery();
 })();
