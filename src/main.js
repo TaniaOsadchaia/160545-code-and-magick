@@ -2,7 +2,7 @@
 
 (function() {
   var initReviews = require('./reviews');
-  var createForm = require('./form');
+  var ReviewForm = require('./form');
   var Game = require('./game');
   var Gallery = require('./gallery');
 
@@ -12,7 +12,7 @@
     // create
     window.Game = Game;
     window.game = new window.Game(gameContainer);
-    window.form = createForm();
+    window.form = new ReviewForm();
     // behaviour
     formOpenButton.onclick = function(evt) {
       evt.preventDefault();
