@@ -14,40 +14,17 @@ var Gallery = function(picturesUrls) {
   this.btnLeft = document.querySelector('.overlay-gallery-control-left');
   this.btnRight = document.querySelector('.overlay-gallery-control-right');
 
-  var self = this;
-
-  this.onCloseClick = function() {
-    self.hide();
-  };
-
-  this.onLeftClick = function() {
-    if (self.activePicture > 0) {
-      self.setActivePicture(self.activePicture - 1);
-    }
-  };
-
-  this.onRightClick = function() {
-    if (self.activePicture < self.pictures.length - 1) {
-      self.setActivePicture(self.activePicture + 1);
-    }
-  };
+  this.onClick = this.onClick.bind(this);
 };
 
 Gallery.prototype.show = function(activePicture) {
-  this.btnClose.addEventListener('click', this.onCloseClick);
-  this.btnLeft.addEventListener('click', this.onLeftClick);
-  this.btnRight.addEventListener('click', this.onRightClick);
-
+  this.addEventListeners();
   this.elemGallery.classList.remove('invisible');
-
   this.setActivePicture(activePicture);
 };
 
 Gallery.prototype.hide = function() {
-  this.btnClose.removeEventListener('click', this.onCloseClick);
-  this.btnLeft.removeEventListener('click', this.onLeftClick);
-  this.btnRight.removeEventListener('click', this.onRightClick);
-
+  this.removeEventListeners();
   this.elemGallery.classList.add('invisible');
 };
 
@@ -63,6 +40,35 @@ Gallery.prototype.setActivePicture = function(activePicture) {
 
   this.elemNumCurrent.innerHTML = String(activePicture + 1);
   this.elemNumTotal.innerHTML = String(this.pictures.length);
+};
+
+Gallery.prototype.addEventListeners = function() {
+  this.elemGallery.addEventListener('click', this.onClick);
+};
+
+Gallery.prototype.removeEventListeners = function() {
+  this.elemGallery.removeEventListener('click', this.onClick);
+};
+
+Gallery.prototype.onClick = function(evt) {
+  switch (evt.target) {
+
+    case this.btnClose:
+      this.hide();
+      break;
+
+    case this.btnLeft:
+      if (this.activePicture > 0) {
+        this.setActivePicture(this.activePicture - 1);
+      }
+      break;
+
+    case this.btnRight:
+      if (this.activePicture < this.pictures.length - 1) {
+        this.setActivePicture(this.activePicture + 1);
+      }
+      break;
+  }
 };
 
 module.exports = Gallery;
