@@ -2,6 +2,10 @@
 
 var loadImage = require('./load-image');
 
+var QUIZ_CLASS = 'review-quiz-answer';
+var ACTIVE_CLASS = 'review-quiz-answer-active';
+var USER_PHOTO_SIZE = '124px';
+
 var template = document.querySelector('#review-template');
 var parent = document.querySelector('.reviews-list');
 
@@ -15,67 +19,57 @@ var createReviewElement = function() {
 var Review = function(data) {
   this.data = data;
   this.element = createReviewElement();
+  this.reviewQuiz = this.element.querySelector('.review-quiz');
 
-  var self = this;
-
-  this.onQuizClick = function(evt) {
-    var elems;
-    var quizClass = 'review-quiz-answer';
-    var activeClass = 'review-quiz-answer-active';
-    if (evt.target.classList.contains(quizClass)) {
-      elems = self.element.querySelectorAll('.' + quizClass);
-      elems.forEach(function(elem) {
-        if (elem === evt.target) {
-          elem.classList.add(activeClass);
-        } else {
-          elem.classList.remove(activeClass);
-        }
-      });
-    }
-  };
+  this.onQuizClick = this.onQuizClick.bind(this);
+  this.onLoadUserPhotoSuccess = this.onLoadUserPhotoSuccess.bind(this);
+  this.onLoadUserPhotoError = this.onLoadUserPhotoError.bind(this);
 };
 
-Review.prototype.draw = function() {
-  var self = this;
-  var drawUserPhoto = function() {
-    var src = self.data.author.picture;
-
-    var onLoadSuccess = function() {
-      var size = '124px';
-      var img = self.element.querySelector('.review-author');
-      img.src = src;
-      img.width = size;
-      img.height = size;
-      img.title = self.data.author.name;
-      img.alt = self.data.author.name;
-    };
-
-    var onLoadError = function() {
-      self.element.classList.add('review-load-failure');
-    };
-
-    loadImage(src, onLoadSuccess, onLoadError);
-  };
-
-  var setInnerHtml = function(className, value) {
-    self.element.querySelector('.' + className).innerHTML = String(value);
-  };
-
-  setInnerHtml('review-rating', self.data.rating);
-  setInnerHtml('review-text', self.data.description);
-  drawUserPhoto();
-
+Review.prototype.init = function() {
+  this.setInnerHtml('review-rating', this.data.rating);
+  this.setInnerHtml('review-text', this.data.description);
+  loadImage(this.data.author.picture, this.onLoadUserPhotoSuccess, this.onLoadUserPhotoError);
   this.addListeners();
 };
 
+Review.prototype.setInnerHtml = function(className, value) {
+  this.element.querySelector('.' + className).innerHTML = String(value);
+};
+
+Review.prototype.onLoadUserPhotoSuccess = function(image) {
+  var img = this.element.querySelector('.review-author');
+  img.src = image.src;
+  img.width = USER_PHOTO_SIZE;
+  img.height = USER_PHOTO_SIZE;
+  img.title = this.data.author.name;
+  img.alt = this.data.author.name;
+};
+
+Review.prototype.onLoadUserPhotoError = function() {
+  this.element.classList.add('review-load-failure');
+};
+
 Review.prototype.addListeners = function() {
-  var elem = this.element.querySelector('.review-quiz');
-  elem.addEventListener('click', this.onQuizClick);
+  this.reviewQuiz.addEventListener('click', this.onQuizClick);
 };
 
 Review.prototype.removeListeners = function() {
-  var elem = this.element.querySelector('.review-quiz');
-  elem.removeEventListener('click', this.onQuizClick);
+  this.reviewQuiz.removeEventListener('click', this.onQuizClick);
+};
+
+Review.prototype.onQuizClick = function(evt) {
+  var elems;
+  if (evt.target.classList.contains(QUIZ_CLASS)) {
+    elems = this.element.querySelectorAll('.' + QUIZ_CLASS);
+    elems.forEach(function(elem) {
+      if (elem === evt.target) {
+        elem.classList.add(ACTIVE_CLASS);
+      } else {
+        elem.classList.remove(ACTIVE_CLASS);
+      }
+    });
+  }
 };
 
 Review.prototype.destroy = function() {

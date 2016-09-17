@@ -42,7 +42,7 @@ var createReviews = function() {
     if (reviewsData instanceof Array) {
       reviewsData.forEach(function(reviewData) {
         review = new Review(reviewData);
-        review.draw();
+        review.init();
         reviews.push(review);
       });
     }
