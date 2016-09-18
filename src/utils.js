@@ -1,6 +1,12 @@
 'use strict';
 
 var utils = {
+  initJS: function() {
+    if (!NodeList.prototype.forEach) {
+      NodeList.prototype.forEach = Array.prototype.forEach;
+    }
+  },
+
   inherit: function(ClChild, ClParent) {
     var EmptyConstructor = function() {};
     EmptyConstructor.prototype = ClParent.prototype;

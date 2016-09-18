@@ -834,7 +834,7 @@ Game.prototype = {
    */
   _onThrottleScroll: function() {
     if (this._isElemVisible(this.clouds)) {
-      this.clouds.style.backgroundPositionX = window.scrollY + 'px';
+      this.clouds.style.backgroundPosition = window.scrollY + 'px 0px';
     }
 
     if (!this._isElemVisible(this.container)) {
