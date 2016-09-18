@@ -5,6 +5,7 @@
   var ReviewForm = require('./form');
   var Game = require('./game');
   var Gallery = require('./gallery');
+  var utils = require('./utils');
 
   var init = function() {
     var formOpenButton = document.querySelector('.reviews-controls-new');
@@ -51,6 +52,7 @@
     window.gallery = new Gallery(picturesUrls);
   };
 
+  utils.initJS();
   init();
   initGallery();
 })();

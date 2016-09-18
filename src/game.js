@@ -1,6 +1,7 @@
 'use strict';
 
 var throttle = require('./throttle');
+var utils = require('./utils');
 
 /**
  * @const
@@ -834,7 +835,7 @@ Game.prototype = {
    */
   _onThrottleScroll: function() {
     if (this._isElemVisible(this.clouds)) {
-      this.clouds.style.backgroundPositionX = window.scrollY + 'px';
+      this.clouds.style.backgroundPosition = utils.getWindowScrollY() + 'px 0px';
     }
 
     if (!this._isElemVisible(this.container)) {

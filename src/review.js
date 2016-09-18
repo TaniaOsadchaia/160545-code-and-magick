@@ -12,7 +12,7 @@ var template = document.querySelector('#review-template');
 var parent = document.querySelector('.reviews-list');
 
 var createReviewElement = function() {
-  var cloneNode = document.importNode(template.content, true);
+  var cloneNode = (window.isIE) ? document.importNode(template, true) : document.importNode(template.content, true);
   var cloneElement = cloneNode.querySelector('.review');
   parent.appendChild(cloneElement);
   return cloneElement;
