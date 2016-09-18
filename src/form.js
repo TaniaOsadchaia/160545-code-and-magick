@@ -1,14 +1,19 @@
 'use strict';
 
+var utils = require('./utils');
+var Component = require('./component');
+
 var GRACE_HOPPER_BIRTHDAY = new Date(1906, 11, 9);
 var COOKIE_NAME = 'review-name';
 var COOKIE_MARK = 'review-mark';
 
 var ReviewForm = function() {
+  Component.call(this, document.querySelector('.overlay-container'));
+
   this.onClose = null;
+
   this.browserCookies = require('browser-cookies');
 
-  this.formContainer = document.querySelector('.overlay-container');
   this.formElement = document.querySelector('.review-form');
   this.formCloseButton = document.querySelector('.review-form-close');
   this.formSubmitButton = document.querySelector('.review-submit');
@@ -18,22 +23,18 @@ var ReviewForm = function() {
   this.formTextReminder = document.querySelector('.review-fields-text');
   this.formStars = document.querySelectorAll('.review-mark-label');
   this.formRemindersContainer = document.querySelector('.review-fields');
-
-  this.onClick = this.onClick.bind(this);
-  this.onInput = this.onInput.bind(this);
 };
 
-ReviewForm.prototype.open = function(cb) {
+utils.inherit(ReviewForm, Component);
+
+ReviewForm.prototype.show = function() {
   this.loadCookies();
   this.checkValidation();
-  this.formContainer.classList.remove('invisible');
-  this.addListeners();
-  cb();
+  Component.prototype.show.call(this);
 };
 
-ReviewForm.prototype.close = function() {
-  this.removeListeners();
-  this.formContainer.classList.add('invisible');
+ReviewForm.prototype.hide = function() {
+  Component.prototype.hide.call(this);
   if (typeof this.onClose === 'function') {
     this.onClose();
   }
@@ -41,39 +42,15 @@ ReviewForm.prototype.close = function() {
 
 ReviewForm.prototype.checkValidation = function() {
   // calc
-  var isValidName = this.isInputEmpty(this.formNameInput);
-  var isValidText = (this.getNumStars() >= 3 || this.isInputEmpty(this.formTextInput));
+  var isValidName = utils.isInputEmpty(this.formNameInput);
+  var isValidText = (this.getNumStars() >= 3 || utils.isInputEmpty(this.formTextInput));
   var isValid = isValidName && isValidText;
   // visible
-  this.setVisible(this.formNameReminder, !isValidName);
-  this.setVisible(this.formTextReminder, !isValidText);
-  this.setVisible(this.formRemindersContainer, !isValid);
-  this.setDisabled(this.formSubmitButton, !isValid);
+  utils.setVisible(this.formNameReminder, !isValidName);
+  utils.setVisible(this.formTextReminder, !isValidText);
+  utils.setVisible(this.formRemindersContainer, !isValid);
+  utils.setDisabled(this.formSubmitButton, !isValid);
   return isValid;
-};
-
-ReviewForm.prototype.isInputEmpty = function(input) {
-  return input.value.trim() !== '';
-};
-
-ReviewForm.prototype.setVisible = function(htmlElement, value) {
-  if (value) {
-    htmlElement.classList.remove('invisible');
-  } else {
-    htmlElement.classList.add('invisible');
-  }
-};
-
-ReviewForm.prototype.setDisabled = function(htmlElement, value) {
-  if (value) {
-    htmlElement.setAttribute('disabled', true);
-  } else {
-    htmlElement.removeAttribute('disabled');
-  }
-};
-
-ReviewForm.prototype.setChecked = function(htmlElement, value) {
-  htmlElement.control.checked = value;
 };
 
 ReviewForm.prototype.getNumStars = function() {
@@ -83,7 +60,7 @@ ReviewForm.prototype.getNumStars = function() {
 ReviewForm.prototype.setNumStars = function(value) {
   value = +value;
   if (value >= 1 && value <= this.formStars.length) {
-    this.setChecked(this.formStars[this.formStars.length - value], true);
+    utils.setChecked(this.formStars[this.formStars.length - value], true);
   }
 };
 
@@ -124,22 +101,12 @@ ReviewForm.prototype.calcCookiesExpires = function() {
   return timeDiff;
 };
 
-ReviewForm.prototype.addListeners = function() {
-  this.formContainer.addEventListener('click', this.onClick);
-  this.formContainer.addEventListener('input', this.onInput);
-};
-
-ReviewForm.prototype.removeListeners = function() {
-  this.formContainer.removeEventListener('click', this.onClick);
-  this.formContainer.removeEventListener('input', this.onInput);
-};
-
 ReviewForm.prototype.onClick = function(evt) {
-  evt.preventDefault();
+  Component.prototype.onClick.call(this, evt);
   switch (evt.target) {
 
     case this.formCloseButton:
-      this.close();
+      this.hide();
       break;
 
     case this.formSubmitButton:
@@ -156,7 +123,7 @@ ReviewForm.prototype.onClick = function(evt) {
 };
 
 ReviewForm.prototype.onInput = function(evt) {
-  evt.preventDefault();
+  Component.prototype.onInput.call(this, evt);
   switch (evt.target) {
 
     case this.formTextInput:
@@ -174,10 +141,8 @@ ReviewForm.prototype.trySubmit = function() {
   var isValid = this.checkValidation();
   if (isValid) {
     this.saveCookies();
-    this.formElement.submit();
+    this.element.submit();
   }
 };
 
 module.exports = ReviewForm;
-
-

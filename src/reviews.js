@@ -1,5 +1,7 @@
 'use strict';
 
+var utils = require('./utils');
+var Component = require('./component');
 var load = require('./load');
 var Review = require('./review');
 
@@ -10,19 +12,33 @@ var FILTER_KEY = 'reviews_filter';
 var FILTER_DEFAULT = 'default';
 
 var ReviewsList = function() {
+  Component.call(this, document.querySelector('.reviews'));
+
   this.reviews = [];
   this.pageNumber = 0;
   this.filterId = FILTER_DEFAULT;
 
   this.btnMore = document.querySelector('.reviews-controls-more');
-  this.elemFilters = document.querySelector('.reviews-filter');
 
-  this.onMoreClick = this.onMoreClick.bind(this);
-  this.onFilterClick = this.onFilterClick.bind(this);
   this.onLoadComplete = this.onLoadComplete.bind(this);
   this.addReview = this.addReview.bind(this);
 
-  this.init();
+  this.show();
+};
+
+utils.inherit(ReviewsList, Component);
+
+ReviewsList.prototype.show = function() {
+  this.btnMore.classList.remove('invisible');
+  this.initFilter();
+  this.loadCurrentPage();
+  Component.prototype.show.call(this);
+};
+
+ReviewsList.prototype.initFilter = function() {
+  var filter = localStorage.getItem(FILTER_KEY);
+  this.filterId = filter ? filter : FILTER_DEFAULT;
+  this.checkFilterElement(this.filterId);
 };
 
 ReviewsList.prototype.clearReviews = function() {
@@ -33,19 +49,6 @@ ReviewsList.prototype.clearReviews = function() {
   this.pageNumber = 0;
 };
 
-ReviewsList.prototype.init = function() {
-  this.btnMore.classList.remove('invisible');
-  this.initFilter();
-  this.loadCurrentPage();
-  this.addEventListeners();
-};
-
-ReviewsList.prototype.initFilter = function() {
-  var filter = localStorage.getItem(FILTER_KEY);
-  this.filterId = filter ? filter : FILTER_DEFAULT;
-  this.checkFilterElement(this.filterId);
-};
-
 ReviewsList.prototype.checkFilterElement = function(filter) {
   var elem = document.getElementById(filter);
   if (elem) {
@@ -53,26 +56,21 @@ ReviewsList.prototype.checkFilterElement = function(filter) {
   }
 };
 
-ReviewsList.prototype.addEventListeners = function() {
-  this.btnMore.addEventListener('click', this.onMoreClick);
-  this.elemFilters.addEventListener('click', this.onFilterClick, true);
-};
+ReviewsList.prototype.onClick = function(evt) {
+  Component.prototype.onClick.call(this, evt);
+  switch (evt.target) {
 
-ReviewsList.prototype.removeEventListeners = function() {
-  this.btnMore.removeEventListeners('click', this.onMoreClick);
-  this.elemFilters.removeEventListeners('click', this.onFilterClick, true);
-};
+    case this.btnMore:
+      this.pageNumber++;
+      this.loadCurrentPage();
+      break;
 
-ReviewsList.prototype.onMoreClick = function() {
-  this.pageNumber++;
-  this.loadCurrentPage();
-};
-
-ReviewsList.prototype.onFilterClick = function(evt) {
-  if (evt.target.classList.contains('reviews-filter-item')) {
-    this.setFilter(evt.target.control.id);
-    this.clearReviews();
-    this.loadCurrentPage();
+    default:
+      if (evt.target.classList.contains('reviews-filter-item')) {
+        this.setFilter(evt.target.control.id);
+        this.clearReviews();
+        this.loadCurrentPage();
+      }
   }
 };
 
@@ -93,12 +91,12 @@ ReviewsList.prototype.onLoadComplete = function(reviewsData) {
 
 ReviewsList.prototype.addReview = function(reviewData) {
   var review = new Review(reviewData);
-  review.init();
   this.reviews.push(review);
 };
 
 ReviewsList.prototype.setFilter = function(filter) {
   this.filterId = filter;
+  this.checkFilterElement(this.filterId);
   localStorage.setItem(FILTER_KEY, filter);
 };
 

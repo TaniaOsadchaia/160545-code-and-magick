@@ -1,10 +1,14 @@
 'use strict';
 
+var utils = require('./utils');
+var Component = require('./component');
+
 var Gallery = function(picturesUrls) {
+  Component.call(this, document.querySelector('.overlay-gallery'));
+
   this.pictures = picturesUrls;
   this.activePicture = 0;
 
-  this.elemGallery = document.querySelector('.overlay-gallery');
   this.elemNumCurrent = document.querySelector('.preview-number-current');
   this.elemNumTotal = document.querySelector('.preview-number-total');
   this.image = null;
@@ -13,19 +17,13 @@ var Gallery = function(picturesUrls) {
   this.btnClose = document.querySelector('.overlay-gallery-close');
   this.btnLeft = document.querySelector('.overlay-gallery-control-left');
   this.btnRight = document.querySelector('.overlay-gallery-control-right');
-
-  this.onClick = this.onClick.bind(this);
 };
+
+utils.inherit(Gallery, Component);
 
 Gallery.prototype.show = function(activePicture) {
-  this.addEventListeners();
-  this.elemGallery.classList.remove('invisible');
   this.setActivePicture(activePicture);
-};
-
-Gallery.prototype.hide = function() {
-  this.removeEventListeners();
-  this.elemGallery.classList.add('invisible');
+  Component.prototype.show.call(this);
 };
 
 Gallery.prototype.setActivePicture = function(activePicture) {
@@ -42,15 +40,8 @@ Gallery.prototype.setActivePicture = function(activePicture) {
   this.elemNumTotal.innerHTML = String(this.pictures.length);
 };
 
-Gallery.prototype.addEventListeners = function() {
-  this.elemGallery.addEventListener('click', this.onClick);
-};
-
-Gallery.prototype.removeEventListeners = function() {
-  this.elemGallery.removeEventListener('click', this.onClick);
-};
-
 Gallery.prototype.onClick = function(evt) {
+  Component.prototype.onClick.call(this, evt);
   switch (evt.target) {
 
     case this.btnClose:
