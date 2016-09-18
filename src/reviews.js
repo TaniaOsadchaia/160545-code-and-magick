@@ -67,7 +67,7 @@ ReviewsList.prototype.onClick = function(evt) {
 
     default:
       if (evt.target.classList.contains('reviews-filter-item')) {
-        this.setFilter(evt.target.control.id);
+        this.setFilter(utils.getControl(evt.target).id);
         this.clearReviews();
         this.loadCurrentPage();
       }

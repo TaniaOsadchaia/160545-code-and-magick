@@ -6,6 +6,7 @@ var Component = require('./component');
 var GRACE_HOPPER_BIRTHDAY = new Date(1906, 11, 9);
 var COOKIE_NAME = 'review-name';
 var COOKIE_MARK = 'review-mark';
+var STAR_CLASS = 'review-mark-label';
 
 var ReviewForm = function() {
   Component.call(this, document.querySelector('.overlay-container'));
@@ -21,7 +22,7 @@ var ReviewForm = function() {
   this.formNameReminder = document.querySelector('.review-fields-name');
   this.formTextInput = document.querySelector('.review-form-field-text');
   this.formTextReminder = document.querySelector('.review-fields-text');
-  this.formStars = document.querySelectorAll('.review-mark-label');
+  this.formStars = document.querySelectorAll('.' + STAR_CLASS);
   this.formRemindersContainer = document.querySelector('.review-fields');
 };
 
@@ -114,8 +115,8 @@ ReviewForm.prototype.onClick = function(evt) {
       break;
 
     default:
-      if (Array.prototype.includes.call(this.formStars, evt.target)) {
-        this.setNumStars(evt.target.control.value);
+      if (evt.target.classList && evt.target.classList.contains(STAR_CLASS)) {
+        this.setNumStars(utils.getControl(evt.target).value);
         this.checkValidation();
         this.saveCookies();
       }
@@ -141,7 +142,7 @@ ReviewForm.prototype.trySubmit = function() {
   var isValid = this.checkValidation();
   if (isValid) {
     this.saveCookies();
-    this.element.submit();
+    this.formElement.submit();
   }
 };
 
