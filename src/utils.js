@@ -2,7 +2,9 @@
 
 var utils = {
   inherit: function(ClChild, ClParent) {
-    ClChild.prototype = new ClParent();
+    var EmptyConstructor = function() {};
+    EmptyConstructor.prototype = ClParent.prototype;
+    ClChild.prototype = new EmptyConstructor();
   },
 
   setVisible: function(htmlElement, value) {
