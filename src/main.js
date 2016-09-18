@@ -17,10 +17,9 @@
     // behaviour
     formOpenButton.onclick = function(evt) {
       evt.preventDefault();
-      window.form.open(function() {
-        window.game.setGameStatus(window.Game.Verdict.PAUSE);
-        window.game.setDeactivated(true);
-      });
+      window.game.setGameStatus(window.Game.Verdict.PAUSE);
+      window.game.setDeactivated(true);
+      window.form.show();
     };
     window.form.onClose = function() {
       window.game.setDeactivated(false);

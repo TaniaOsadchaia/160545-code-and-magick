@@ -822,7 +822,6 @@ Game.prototype = {
   _initializeScrollListener: function() {
     this._onScroll = throttle(this._onThrottleScroll, THROTTLE_TIMEOUT);
     window.addEventListener('scroll', this._onScroll);
-    this._onScroll(); // first updating
   },
 
   /** @private */

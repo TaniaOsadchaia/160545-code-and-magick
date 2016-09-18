@@ -1,5 +1,7 @@
 'use strict';
 
+var utils = require('./utils');
+var Component = require('./component');
 var loadImage = require('./load-image');
 
 var QUIZ_CLASS = 'review-quiz-answer';
@@ -17,20 +19,24 @@ var createReviewElement = function() {
 };
 
 var Review = function(data) {
+  Component.call(this, createReviewElement());
+
   this.data = data;
-  this.element = createReviewElement();
   this.reviewQuiz = this.element.querySelector('.review-quiz');
 
-  this.onQuizClick = this.onQuizClick.bind(this);
   this.onLoadUserPhotoSuccess = this.onLoadUserPhotoSuccess.bind(this);
   this.onLoadUserPhotoError = this.onLoadUserPhotoError.bind(this);
+
+  this.show();
 };
 
-Review.prototype.init = function() {
+utils.inherit(Review, Component);
+
+Review.prototype.show = function() {
   this.setInnerHtml('review-rating', this.data.rating);
   this.setInnerHtml('review-text', this.data.description);
   loadImage(this.data.author.picture, this.onLoadUserPhotoSuccess, this.onLoadUserPhotoError);
-  this.addListeners();
+  Component.prototype.show.call(this);
 };
 
 Review.prototype.setInnerHtml = function(className, value) {
@@ -50,15 +56,8 @@ Review.prototype.onLoadUserPhotoError = function() {
   this.element.classList.add('review-load-failure');
 };
 
-Review.prototype.addListeners = function() {
-  this.reviewQuiz.addEventListener('click', this.onQuizClick);
-};
-
-Review.prototype.removeListeners = function() {
-  this.reviewQuiz.removeEventListener('click', this.onQuizClick);
-};
-
-Review.prototype.onQuizClick = function(evt) {
+Review.prototype.onClick = function(evt) {
+  Component.prototype.onClick.call(this, evt);
   var elems;
   if (evt.target.classList.contains(QUIZ_CLASS)) {
     elems = this.element.querySelectorAll('.' + QUIZ_CLASS);
@@ -73,10 +72,8 @@ Review.prototype.onQuizClick = function(evt) {
 };
 
 Review.prototype.destroy = function() {
-  this.removeListeners();
-  this.element.parentNode.removeChild(this.element);
-  this.element = null;
   this.data = null;
+  Component.prototype.destroy.call(this);
 };
 
 module.exports = Review;
